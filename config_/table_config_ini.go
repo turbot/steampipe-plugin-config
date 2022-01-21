@@ -37,12 +37,11 @@ func tableConfigINI(ctx context.Context) *plugin.Table {
 }
 
 type parseFormat struct {
-	Path         string
-	Section      string
-	Key          string
-	Value        string
-	Comment      string
-	NestedValues []string
+	Path    string
+	Section string
+	Key     string
+	Value   string
+	Comment string
 }
 
 func listINIWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
