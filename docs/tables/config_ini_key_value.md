@@ -189,3 +189,38 @@ where
 | database                      | url                           | http://localhost:8080/ |
 +-------------------------------+-------------------------------+------------------------+
 ```
+
+### Query files with nested value
+
+Given the file `sample.ini`with following configuration:
+
+```bash
+[profile]
+access_key = foo
+secret_key = bar
+s3 =
+  max_concurrent_requests = 10
+  max_queue_size = 1000
+```
+
+```sql
+select
+  section,
+  key,
+  value
+from
+  config_ini_key_value
+where
+  path = '/Users/myuser/ini/defaults.ini';
+```
+
+```sh
++---------+----------------------------+-------+
+| section | key                        | value |
++---------+----------------------------+-------+
+| profile | s3.max_concurrent_requests | 10    |
+| profile | s3.max_queue_size          | 1000  |
+| profile | access_key                 | foo   |
+| profile | secret_key                 | bar   |
++---------+----------------------------+-------+
+```
