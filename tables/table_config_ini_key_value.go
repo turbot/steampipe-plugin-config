@@ -13,9 +13,9 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/plugin"
 )
 
-func tableConfigINI(ctx context.Context) *plugin.Table {
+func tableConfigINIKeyValue(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "config_ini",
+		Name:        "config_ini_key_value",
 		Description: "Table representation of an INI file.",
 		List: &plugin.ListConfig{
 			Hydrate: listINIWithPath,

@@ -1,4 +1,4 @@
-# Table: config_ini
+# Table: config_ini_key_value
 
 Query data from INI files. The table will store all configurations along with sections of all INI file found in the configured `paths`.
 
@@ -17,7 +17,29 @@ select
   key,
   value
 from
-  config_ini;
+  config_ini_key_value;
+```
+
+```sh
++---------------------------------------------------------------+-------------------------------+-------------------------------+---------------------------+
+| path                                                          | section                       | key                           | value                     |
++---------------------------------------------------------------+-------------------------------+-------------------------------+---------------------------+
+| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | server                        | enforce_domain                | true                      |
+| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | DEFAULT                       | instance_name                 | my-instance               |
+| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | security                      | admin_user                    | admin                     |
+| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | paths                         | data                          | /home/git/grafana         |
+| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | plugin.grafana-image-renderer | rendering_ignore_https_errors | true                      |
+| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | analytics                     | check_for_updates             | false                     |
+| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | server                        | host                          | http://localhost:9999/api |
+| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | server                        | http_port                     | 9999                      |
+| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | profile testing               | aws_secret_access_key         | bar                       |
+| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | auth.google                   | client_secret                 | 0ldS3cretKey              |
+| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | server                        | protocol                      | http                      |
+| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | database                      | port                          | 8080                      |
+| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | profile testing               | aws_access_key_id             | foo                       |
+| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | DEFAULT                       | app_mode                      | development               |
+| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | database                      | url                           | http://localhost:8080/    |
++---------------------------------------------------------------+-------------------------------+-------------------------------+---------------------------+
 ```
 
 or, you can query configurations of a particular file using:
@@ -28,7 +50,7 @@ select
   key,
   value
 from
-  config_ini
+  config_ini_key_value
 where
   path = '/Users/myuser/ini/defaults.ini';
 ```
@@ -65,7 +87,7 @@ select
   key,
   value
 from
-  config_ini
+  config_ini_key_value
 where
   path = '/Users/myuser/ini/defaults.ini';
 ```
@@ -89,7 +111,7 @@ select
   key,
   value
 from
-  config_ini
+  config_ini_key_value
 where
   path = '/Users/myuser/ini/defaults.ini'
   and section = 'analytics'
@@ -105,7 +127,7 @@ select
   key,
   value::bool
 from
-  config_ini
+  config_ini_key_value
 where
   path = '/Users/myuser/ini/defaults.ini'
   and section = 'analytics'
@@ -149,7 +171,7 @@ select
   key,
   value
 from
-  config_ini
+  config_ini_key_value
 where
   path = '/Users/myuser/ini/defaults.ini';
 ```
