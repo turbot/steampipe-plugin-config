@@ -37,7 +37,7 @@ where
 
 ### Query a simple file
 
-Given the file `defaults.ini`with following configuration:
+Given the file `defaults.ini` with following configuration:
 
 ```bash
 # default section
@@ -53,6 +53,7 @@ client_secret = 0ldS3cretKey
 rendering_ignore_https_errors = true
 
 [analytics]
+# Set to false to disable all checks for new versions of installed plugins
 check_for_updates = false
 ```
 
@@ -69,6 +70,18 @@ where
   path = '/Users/myuser/ini/defaults.ini';
 ```
 
+```sh
++-------------------------------+-------------------------------+--------------+
+| section                       | key                           | value        |
++-------------------------------+-------------------------------+--------------+
+| auth.google                   | client_secret                 | 0ldS3cretKey |
+| analytics                     | check_for_updates             | false        |
+| security                      | admin_user                    | admin        |
+| plugin.grafana-image-renderer | rendering_ignore_https_errors | true         |
+| DEFAULT                       | instance_name                 | my-instance  |
++-------------------------------+-------------------------------+--------------+
+```
+
 or, you can check for value of particular keys:
 
 ```sql
@@ -83,7 +96,24 @@ where
   and key = 'check_for_updates';
 ```
 
-### Query file with environment variable reference
+### Casting column data for analysis
+
+Text columns can be easily cast to other types:
+
+```sql
+select
+  key,
+  value::bool
+from
+  config_ini
+where
+  path = '/Users/myuser/ini/defaults.ini'
+  and section = 'analytics'
+  and key = 'check_for_updates'
+  and not value::bool;
+```
+
+### Query file with interpolation of values
 
 Given the file `defaults.ini`with following configuration:
 
@@ -97,6 +127,10 @@ admin_user = admin
 [auth.google]
 client_secret = 0ldS3cretKey
 
+[database]
+port = 8080
+url = http://localhost:%(port)s/
+
 [plugin.grafana-image-renderer]
 rendering_ignore_https_errors = true
 ```
@@ -107,7 +141,7 @@ and, the environment variable `HOSTNAME` configured with:
 export HOSTNAME=my-instance
 ```
 
-In the above INI file, `instance_name` value refers to an environment variable `${HOSTNAME}`.
+In the above INI file, `instance_name` value refers to an environment variable `${HOSTNAME}`, and `url` refers to other values in the same section.
 When querying the specific field, the table will store the actual value of `${HOSTNAME}`, i.e. `my-instance`.
 
 ```sql
@@ -118,4 +152,18 @@ from
   config_ini
 where
   path = '/Users/myuser/ini/defaults.ini';
+```
+
+```sh
++-------------------------------+-------------------------------+------------------------+
+| section                       | key                           | value                  |
++-------------------------------+-------------------------------+------------------------+
+| plugin.grafana-image-renderer | rendering_ignore_https_errors | true                   |
+| database                      | port                          | 8080                   |
+| DEFAULT                       | instance_name                 | my-instance            |
+| analytics                     | check_for_updates             | false                  |
+| auth.google                   | client_secret                 | 0ldS3cretKey           |
+| security                      | admin_user                    | admin                  |
+| database                      | url                           | http://localhost:8080/ |
++-------------------------------+-------------------------------+------------------------+
 ```
