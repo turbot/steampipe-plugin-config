@@ -22,7 +22,8 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		DefaultTransform: transform.FromCamel().NullIfZero(),
 		SchemaMode:       plugin.SchemaModeDynamic,
 		TableMap: map[string]*plugin.Table{
-			"config_ini": tableConfigINI(ctx),
+			"config_ini":  tableConfigINI(ctx),
+			"config_yaml": tableConfigYAML(ctx),
 		},
 	}
 	return p

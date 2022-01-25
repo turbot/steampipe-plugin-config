@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/turbot/steampipe-plugin-sdk v1.8.3
 	gopkg.in/ini.v1 v1.66.3
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
 
 require (
