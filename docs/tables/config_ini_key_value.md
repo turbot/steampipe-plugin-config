@@ -1,45 +1,44 @@
 # Table: config_ini_key_value
 
-Query data from INI files. The table will store all configurations along with sections of all INI file found in the configured `paths`.
+Query section and key-value pair data from INI files found in the configured `paths`.
 
 For instance, if `paths` is set to `/Users/myuser/ini/*`, and that directory contains:
 
 - defaults.ini
 - sample.ini
 
-This table will store all the configurations from each file mentioned above, along with section details, and comments.
-
-Which you can then query directly:
+This table will retrieve all key-value pairs from each file mentioned above, along with section names and comments, which you can then query directly:
 
 ```sql
 select
   section,
   key,
-  value
+  value,
+  comment
 from
   config_ini_key_value;
 ```
 
 ```sh
-+---------------------------------------------------------------+-------------------------------+-------------------------------+---------------------------+
-| path                                                          | section                       | key                           | value                     |
-+---------------------------------------------------------------+-------------------------------+-------------------------------+---------------------------+
-| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | server                        | enforce_domain                | true                      |
-| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | DEFAULT                       | instance_name                 | my-instance               |
-| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | security                      | admin_user                    | admin                     |
-| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | paths                         | data                          | /home/git/grafana         |
-| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | plugin.grafana-image-renderer | rendering_ignore_https_errors | true                      |
-| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | analytics                     | check_for_updates             | false                     |
-| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | server                        | host                          | http://localhost:9999/api |
-| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | server                        | http_port                     | 9999                      |
-| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | profile testing               | aws_secret_access_key         | bar                       |
-| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | auth.google                   | client_secret                 | 0ldS3cretKey              |
-| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | server                        | protocol                      | http                      |
-| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | database                      | port                          | 8080                      |
-| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | profile testing               | aws_access_key_id             | foo                       |
-| /Users/subhajit/Downloads/node_test/sample_files/sample.ini   | DEFAULT                       | app_mode                      | development               |
-| /Users/subhajit/Downloads/node_test/sample_files/defaults.ini | database                      | url                           | http://localhost:8080/    |
-+---------------------------------------------------------------+-------------------------------+-------------------------------+---------------------------+
++--------------------------------+-------------------------------+-------------------------------+---------------------------+-----------------------------+
+| path                           | section                       | key                           | value                     | comment                     |
++--------------------------------+-------------------------------+-------------------------------+---------------------------+-----------------------------+
+| /Users/myuser/ini/defaults.ini | analytics                     | check_for_updates             | false                     |                             |
+| /Users/myuser/ini/defaults.ini | auth.google                   | client_secret                 | 0ldS3cretKey              |                             |
+| /Users/myuser/ini/defaults.ini | database                      | port                          | 8080                      |                             |
+| /Users/myuser/ini/defaults.ini | database                      | url                           | http://localhost:8080/    |                             |
+| /Users/myuser/ini/defaults.ini | DEFAULT                       | instance_name                 | my-instance               |                             |
+| /Users/myuser/ini/defaults.ini | plugin.grafana-image-renderer | rendering_ignore_https_errors | true                      |                             |
+| /Users/myuser/ini/defaults.ini | security                      | admin_user                    | admin                     |                             |
+| /Users/myuser/ini/sample.ini   | DEFAULT                       | app_mode                      | development               |                             |
+| /Users/myuser/ini/sample.ini   | paths                         | data                          | /home/git/grafana         |                             |
+| /Users/myuser/ini/sample.ini   | profile testing               | aws_access_key_id             | foo                       |                             |
+| /Users/myuser/ini/sample.ini   | profile testing               | aws_secret_access_key         | bar                       |                             |
+| /Users/myuser/ini/sample.ini   | server                        | enforce_domain                | true                      |                             |
+| /Users/myuser/ini/sample.ini   | server                        | host                          | http://localhost:9999/api | # Update after moving hosts |
+| /Users/myuser/ini/sample.ini   | server                        | http_port                     | 9999                      |                             |
+| /Users/myuser/ini/sample.ini   | server                        | protocol                      | http                      |                             |
++--------------------------------+-------------------------------+-------------------------------+---------------------------+-----------------------------+
 ```
 
 or, you can query configurations of a particular file using:
@@ -48,7 +47,8 @@ or, you can query configurations of a particular file using:
 select
   section,
   key,
-  value
+  value,
+  comment
 from
   config_ini_key_value
 where
@@ -79,7 +79,7 @@ rendering_ignore_https_errors = true
 check_for_updates = false
 ```
 
-and, the query is:
+and the query is:
 
 ```sql
 select
@@ -104,7 +104,7 @@ where
 +-------------------------------+-------------------------------+--------------+
 ```
 
-or, you can check for value of particular keys:
+or, you can check the value for a particular key:
 
 ```sql
 select
@@ -137,7 +137,7 @@ where
 
 ### Query file with interpolation of values
 
-Given the file `defaults.ini`with following configuration:
+Given the file `defaults.ini` with following configuration:
 
 ```bash
 # default section
@@ -163,8 +163,8 @@ and, the environment variable `HOSTNAME` configured with:
 export HOSTNAME=my-instance
 ```
 
-In the above INI file, `instance_name` value refers to an environment variable `${HOSTNAME}`, and `url` refers to other values in the same section.
-When querying the specific field, the table will store the actual value of `${HOSTNAME}`, i.e. `my-instance`.
+In the above INI file, the value for `instance_name` refers to an environment variable `${HOSTNAME}`, and `url` refers to other values in the same section.
+When querying the specific field, the table will store the actual value of `${HOSTNAME}`, i.e., `my-instance`.
 
 ```sql
 select
@@ -188,39 +188,4 @@ where
 | security                      | admin_user                    | admin                  |
 | database                      | url                           | http://localhost:8080/ |
 +-------------------------------+-------------------------------+------------------------+
-```
-
-### Query files with nested value
-
-Given the file `sample.ini`with following configuration:
-
-```bash
-[profile]
-access_key = foo
-secret_key = bar
-s3 =
-  max_concurrent_requests = 10
-  max_queue_size = 1000
-```
-
-```sql
-select
-  section,
-  key,
-  value
-from
-  config_ini_key_value
-where
-  path = '/Users/myuser/ini/defaults.ini';
-```
-
-```sh
-+---------+----------------------------+-------+
-| section | key                        | value |
-+---------+----------------------------+-------+
-| profile | s3.max_concurrent_requests | 10    |
-| profile | s3.max_queue_size          | 1000  |
-| profile | access_key                 | foo   |
-| profile | secret_key                 | bar   |
-+---------+----------------------------+-------+
 ```
