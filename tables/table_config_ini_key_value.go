@@ -56,10 +56,9 @@ func listINIWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 	}
 
 	for _, path := range paths {
+		// Load file
 		var opts ini.LoadOptions
 		opts.AllowPythonMultilineValues = true
-
-		// Load file
 		cfg, err := ini.LoadSources(opts, path)
 		if err != nil {
 			return nil, fmt.Errorf("fail to read file: %v", err)
@@ -68,17 +67,7 @@ func listINIWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 		for _, i := range cfg.Sections() {
 			// Extract keys of a section
 			for _, key := range cfg.Section(i.Name()).Keys() {
-				// Check for nested config
-				isNested, _ := regexp.Compile(`^\n`)
-				if isNested.MatchString(key.String()) {
-					nestedValues := parseNestedValues(key.Name(), key.String())
-					for k, v := range nestedValues {
-						newKey := fmt.Sprintf("%s.%s", key.Name(), k)
-						d.StreamListItem(ctx, formatResult(cfg, path, i.Name(), newKey, v, ""))
-					}
-				} else {
-					d.StreamListItem(ctx, formatResult(cfg, path, i.Name(), key.Name(), key.String(), key.Comment))
-				}
+				d.StreamListItem(ctx, formatResult(cfg, path, i.Name(), key.Name(), key.String(), key.Comment))
 			}
 		}
 	}
@@ -117,18 +106,4 @@ func parseValue(cfg *ini.File, str string) string {
 		}
 	}
 	return str
-}
-
-func parseNestedValues(key string, val string) map[string]string {
-	val = strings.Replace(val, "\n", "", 1)
-	val = strings.ReplaceAll(val, " ", "")
-	val = strings.ReplaceAll(val, "\n", ",")
-
-	nestedValues := strings.Split(val, ",")
-	result := map[string]string{}
-	for _, i := range nestedValues {
-		splitStr := strings.Split(i, "=")
-		result[splitStr[0]] = splitStr[1]
-	}
-	return result
 }
