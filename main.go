@@ -1,7 +1,7 @@
 package main
 
 import (
-	config "github.com/turbot/steampipe-plugin-config/config_"
+	config "github.com/turbot/steampipe-plugin-config/tables"
 	"github.com/turbot/steampipe-plugin-sdk/plugin"
 )
 
