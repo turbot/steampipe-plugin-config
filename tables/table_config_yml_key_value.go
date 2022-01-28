@@ -31,7 +31,7 @@ func tableConfigYMLKeyValue(ctx context.Context) *plugin.Table {
 			{Name: "path", Type: proto.ColumnType_STRING, Description: "Specifies the path of the YML file."},
 			{Name: "key_path", Type: proto.ColumnType_STRING, Transform: transform.FromField("Key").Transform(keysToSnakeCase), Description: "Specifies full path of a key in YML file."},
 			{Name: "value", Type: proto.ColumnType_STRING, Description: "Specifies the value of the corresponding key."},
-			{Name: "keys", Type: proto.ColumnType_JSON, Transform: transform.FromField("Key"), Description: ""},
+			{Name: "keys", Type: proto.ColumnType_JSON, Transform: transform.FromField("Key"), Description: "The array representation of path of a key."},
 			{Name: "tag", Type: proto.ColumnType_STRING, Description: "Specifies the data type of the value."},
 			{Name: "start_line", Type: proto.ColumnType_INT, Description: "Specifies the line number where the value is located."},
 			{Name: "start_column", Type: proto.ColumnType_INT, Description: "Specifies the starting column of the value."},
@@ -93,7 +93,7 @@ type Row struct {
 	Path        string
 	Key         []string
 	Value       interface{}
-	Tag         string
+	Tag         *string
 	PreComments []string
 	HeadComment string
 	LineComment string
@@ -219,19 +219,19 @@ func keysToSnakeCase(_ context.Context, d *transform.TransformData) (interface{}
 	return strings.Join(snakes, "."), nil
 }
 
-func tagToJSONType(tag string) string {
+func tagToJSONType(tag string) *string {
+	dataType := "string"
 	switch tag {
 	case "!!str":
-		return "string"
+		dataType = "string"
 	case "!!int":
-		return "integer"
+		dataType = "integer"
 	case "!!float":
-		return "number"
+		dataType = "number"
 	case "!!null":
-		return "null"
+		return nil
 	case "!!bool":
-		return "boolean"
-	default:
-		return "string"
+		dataType = "boolean"
 	}
+	return &dataType
 }
