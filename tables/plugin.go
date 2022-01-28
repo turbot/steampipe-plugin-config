@@ -24,15 +24,14 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		TableMap: map[string]*plugin.Table{
 			"config_ini_key_value": tableConfigINIKeyValue(ctx),
 			"config_ini_section":   tableConfigINISection(ctx),
-			"config_yml_key_value": tableConfigYMLKeyValue(ctx),
 			"config_yml_file":      tableConfigYMLFile(ctx),
+			"config_yml_key_value": tableConfigYMLKeyValue(ctx),
 		},
 	}
 	return p
 }
 
 func fileList(ctx context.Context, p *plugin.Connection, fileType string) ([]string, error) {
-
 	var filePaths []string
 
 	// Glob paths in config
