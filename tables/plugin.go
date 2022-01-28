@@ -90,8 +90,15 @@ func fileList(ctx context.Context, p *plugin.Connection, fileType string) ([]str
 		// This file was expanded from the glob, so check it's likely to be
 		// of the right type based on the name / extension.
 		ext := strings.ToLower(filepath.Ext(i))
-		if ext == fileType {
-			filePaths = append(filePaths, i)
+		switch fileType {
+		case ".ini":
+			if ext == ".ini" {
+				filePaths = append(filePaths, i)
+			}
+		case ".yml":
+			if ext == ".yml" || ext == ".yaml" {
+				filePaths = append(filePaths, i)
+			}
 		}
 	}
 
