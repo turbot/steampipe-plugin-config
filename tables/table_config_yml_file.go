@@ -36,14 +36,21 @@ type parseYMLContent struct {
 }
 
 func listYMLFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	// Search for INI files to create as tables
-	paths, err := fileList(ctx, d.Connection, ".yml")
-	if err != nil {
-		return nil, err
-	}
-
+	// #1 - Path via qual
+	// If the path was requested through qualifier then match it exactly. Globs
+	// are not supported in this context since the output value for the column
+	// will never match the requested value.
+	//
+	// #2 - Path via glob paths in config
+	var paths []string
 	if d.KeyColumnQuals["path"] != nil {
 		paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
+	} else {
+		var err error
+		paths, err = fileList(ctx, d.Connection, ".yml")
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	for _, path := range paths {
