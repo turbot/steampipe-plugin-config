@@ -39,6 +39,8 @@ from
   ini_key_value;
 ```
 
+or, you can query configurations of a particular file using:
+
 ```sql
 select
   path,

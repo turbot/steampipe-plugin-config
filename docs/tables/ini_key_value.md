@@ -11,6 +11,7 @@ This table will retrieve all key-value pairs from each file mentioned above, alo
 
 ```sql
 select
+  path,
   section,
   key,
   value,
