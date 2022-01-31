@@ -10,9 +10,9 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/plugin"
 )
 
-func tableConfigINISection(ctx context.Context) *plugin.Table {
+func tableINISection(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "config_ini_section",
+		Name:        "ini_section",
 		Description: "Retrieves a list of sections and subsections defined in a INI file.",
 		List: &plugin.ListConfig{
 			Hydrate: listINISections,

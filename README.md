@@ -36,7 +36,7 @@ select
   key,
   value
 from
-  config_ini;
+  ini_key_value;
 ```
 
 ```sql
@@ -46,13 +46,13 @@ select
   key,
   value
 from
-  config_ini
+  ini_key_value
 where
-  path = ;
+  path = '/Users/myuser/ini/defaults.ini';
 ```
 
 ```sh
-> select section, key, value from config_ini where section = 'Settings';
+> select section, key, value from ini_key_value where section = 'Settings';
 +----------+---------------+-------------------------------------------+
 | section  | key           | value                                     |
 +----------+---------------+-------------------------------------------+

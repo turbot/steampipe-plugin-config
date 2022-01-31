@@ -1,4 +1,4 @@
-# Table: config_ini_key_value
+# Table: ini_key_value
 
 Query section and key-value pair data from INI files found in the configured `paths`.
 
@@ -16,7 +16,7 @@ select
   value,
   comment
 from
-  config_ini_key_value;
+  ini_key_value;
 ```
 
 ```sh
@@ -50,7 +50,7 @@ select
   value,
   comment
 from
-  config_ini_key_value
+  ini_key_value
 where
   path = '/Users/myuser/ini/defaults.ini';
 ```
@@ -87,7 +87,7 @@ select
   key,
   value
 from
-  config_ini_key_value
+  ini_key_value
 where
   path = '/Users/myuser/ini/defaults.ini';
 ```
@@ -111,7 +111,7 @@ select
   key,
   value
 from
-  config_ini_key_value
+  ini_key_value
 where
   path = '/Users/myuser/ini/defaults.ini'
   and section = 'analytics'
@@ -127,7 +127,7 @@ select
   key,
   value::bool
 from
-  config_ini_key_value
+  ini_key_value
 where
   path = '/Users/myuser/ini/defaults.ini'
   and section = 'analytics'
@@ -171,7 +171,7 @@ select
   key,
   value
 from
-  config_ini_key_value
+  ini_key_value
 where
   path = '/Users/myuser/ini/defaults.ini';
 ```
