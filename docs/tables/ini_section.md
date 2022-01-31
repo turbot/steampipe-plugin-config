@@ -1,4 +1,4 @@
-# Table: config_ini_section
+# Table: ini_section
 
 Retrieves all sections defined in an INI file.
 
@@ -12,7 +12,7 @@ select
   section,
   comment
 from
-  config_ini_section
+  ini_section;
 ```
 
 ### List sections for a specific file
@@ -23,7 +23,7 @@ select
   section,
   comment
 from
-  config_ini_section
+  ini_section
 where
   path = '/Users/myuser/configs/main.ini';
 ```
@@ -36,7 +36,7 @@ select
   section,
   comment
 from
-  config_ini_section
+  ini_section
 where
   section like 'settings.%';
 ```
