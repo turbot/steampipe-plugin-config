@@ -1,4 +1,4 @@
-# Table: config_yml_key_value
+# Table: yml_key_value
 
 Query key-value pair data along with comments and line number from YML files found in the configured `paths`.
 
@@ -17,7 +17,7 @@ select
   pre_comments,
   start_line
 from
-  config_yml_key_value;
+  yml_key_value;
 ```
 
 ```sh
@@ -58,7 +58,7 @@ select
   pre_comments,
   start_line
 from
-  config_yml_key_value
+  yml_key_value
 where
   path = '/Users/myuser/yml/invoice.yml';
 ```
@@ -110,7 +110,7 @@ with items as (
     regexp_replace(key_path, 'items\.[0-9]+\.', '') as data,
     value
   from
-    config_yml_key_value
+    yml_key_value
   where
     path = '/Users/myuser/yml/invoice.yml'
     and key_path like 'items.%'
@@ -145,7 +145,7 @@ with items as (
     regexp_replace(key_path, 'items\.[0-9]+\.', '') as data,
     value
   from
-    config_yml_key_value
+    yml_key_value
   where
     path = '/Users/myuser/yml/invoice.yml'
     and key_path like 'items.%'
@@ -176,7 +176,7 @@ with items as (
     regexp_replace(key_path, 'items\.[0-9]+\.', '') as data,
     value
   from
-    config_yml_key_value
+    yml_key_value
   where
     path = '/Users/myuser/yml/invoice.yml'
     and key_path like 'items.%'

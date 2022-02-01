@@ -14,12 +14,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func tableConfigYMLKeyValue(ctx context.Context) *plugin.Table {
+func tableYMLKeyValue(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "config_yml_key_value",
+		Name:        "yml_key_value",
 		Description: "List all key value pairs from given YML file.",
 		List: &plugin.ListConfig{
-			Hydrate: listConfigYMLKeyValue,
+			Hydrate: listYMLKeyValue,
 			KeyColumns: plugin.KeyColumnSlice{
 				{
 					Name:    "path",
@@ -43,7 +43,7 @@ func tableConfigYMLKeyValue(ctx context.Context) *plugin.Table {
 	}
 }
 
-func listConfigYMLKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listYMLKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
 	// #1 - Path via qual
 	// If the path was requested through qualifier then match it exactly. Globs
 	// are not supported in this context since the output value for the column
@@ -66,7 +66,7 @@ func listConfigYMLKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.H
 		reader, err := os.Open(path)
 		if err != nil {
 			// Could not open the file, so log and ignore
-			plugin.Logger(ctx).Error("listConfigYMLKeyValue", "file_error", err, "path", path)
+			plugin.Logger(ctx).Error("listYMLKeyValue", "file_error", err, "path", path)
 			return nil, nil
 		}
 
@@ -74,7 +74,7 @@ func listConfigYMLKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.H
 		decoder := yaml.NewDecoder(reader)
 		err = decoder.Decode(&root)
 		if err != nil {
-			plugin.Logger(ctx).Error("listConfigYMLKeyValue", "parse_error", err, "path", path)
+			plugin.Logger(ctx).Error("listYMLKeyValue", "parse_error", err, "path", path)
 			return nil, fmt.Errorf("failed to parse file %s: %v", path, err)
 		}
 

@@ -1,4 +1,4 @@
-# Table: config_yml_file
+# Table: yml_file
 
 Query the file contents from YML files found in the configured `paths`.
 
@@ -14,7 +14,7 @@ select
   path,
   jsonb_pretty(content) as file_content
 from
-  config_yml_file;
+  yml_file;
 ```
 
 ```sh
@@ -66,7 +66,7 @@ select
   path,
   jsonb_pretty(content) as file_content
 from
-  config_yml_file
+  yml_file
 where
   path = '/Users/myuser/yml/invoice.yml';
 ```
@@ -117,9 +117,9 @@ select
   concat(content -> 'customer' ->> 'first_name', ' ', content -> 'customer' ->> 'family_name') as customer_name,
   jsonb_array_length(content -> 'items') as order_count
 from
-  config_yml_file
+  yml_file
 where
-  path = '/Users/subhajit/Downloads/node_test/sample_files/invoice.yml';
+  path = '/Users/myuser/yml/invoice.yml';
 ```
 
 ```sh
@@ -141,10 +141,10 @@ select
   (item ->> 'quantity')::integer as quantity,
   (item ->> 'price')::float * (item ->> 'quantity')::integer as total
 from
-  config_yml_file,
+  yml_file,
   jsonb_array_elements(content -> 'items') as item
 where
-  path = '/Users/subhajit/Downloads/node_test/sample_files/invoice.yml';
+  path = '/Users/myuser/yml/invoice.yml';
 ```
 
 ```sh
@@ -169,8 +169,8 @@ select
   (item ->> 'quantity')::integer as quantity,
   (item ->> 'price')::float * (item ->> 'quantity')::integer as total
 from
-  config_yml_file,
+  yml_file,
   jsonb_array_elements(content -> 'items') as item
 where
-  path = '/Users/subhajit/Downloads/node_test/sample_files/invoice.yml';
+  path = '/Users/myuser/yml/invoice.yml';
 ```

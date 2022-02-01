@@ -10,9 +10,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func tableConfigYMLFile(ctx context.Context) *plugin.Table {
+func tableYMLFile(ctx context.Context) *plugin.Table {
 	return &plugin.Table{
-		Name:        "config_yml_file",
+		Name:        "yml_file",
 		Description: "Represents the YML file content into JSON format.",
 		List: &plugin.ListConfig{
 			Hydrate: listYMLFileWithPath,
