@@ -106,14 +106,14 @@ and the query is:
 ```sql
 with items as (
   select
-    regexp_replace(key_path, '\.[a-z_]+', '') as item,
-    regexp_replace(key_path, 'items\.[0-9]+\.', '') as data,
+    subpath(key_path, 0, 2) as item,
+    subpath(key_path, 2, 3) as data,
     value
   from
     yml_key_value
   where
     path = '/Users/myuser/yml/invoice.yml'
-    and key_path like 'items.%'
+    and key_path ~ 'items.*'
 )
 select
   max(case when data = 'part_no' then value else null end) as part_no,
@@ -128,12 +128,12 @@ group by
 ```
 
 ```sh
-+-----------------------------+---------+----------+-------+--------+
-| item_name                   | part_no | quantity | price | size   |
-+-----------------------------+---------+----------+-------+--------+
-| Water Bucket (Filled)       | A4786   | 4        | 1.47  | <null> |
-| High Heeled "Ruby" Slippers | E1628   | 1        | 133.7 | 8      |
-+-----------------------------+---------+----------+-------+--------+
++---------+-----------------------------+--------+----------+-------+
+| part_no | item_name                   | size   | quantity | price |
++---------+-----------------------------+--------+----------+-------+
+| A4786   | Water Bucket (Filled)       | <null> | 4        | 1.47  |
+| E1628   | High Heeled "Ruby" Slippers | 8      | 1        | 133.7 |
++---------+-----------------------------+--------+----------+-------+
 ```
 
 or, you can check the value for a particular key:
@@ -141,14 +141,14 @@ or, you can check the value for a particular key:
 ```sql
 with items as (
   select
-    regexp_replace(key_path, '\.[a-z_]+', '') as item,
-    regexp_replace(key_path, 'items\.[0-9]+\.', '') as data,
+    subpath(key_path, 0, 2) as item,
+    subpath(key_path, 2, 3) as data,
     value
   from
     yml_key_value
   where
     path = '/Users/myuser/yml/invoice.yml'
-    and key_path like 'items.%'
+    and key_path ~ 'items.*'
 ),
 pivot_tables as (
   select
@@ -172,14 +172,14 @@ Text columns can be easily cast to other types:
 ```sql
 with items as (
   select
-    regexp_replace(key_path, '\.[a-z_]+', '') as item,
-    regexp_replace(key_path, 'items\.[0-9]+\.', '') as data,
+    subpath(key_path, 0, 2) as item,
+    subpath(key_path, 2, 3) as data,
     value
   from
     yml_key_value
   where
     path = '/Users/myuser/yml/invoice.yml'
-    and key_path like 'items.%'
+    and key_path ~ 'items.*'
 )
 select
   max(case when data = 'part_no' then value else null end) as part_no,

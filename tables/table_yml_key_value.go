@@ -29,7 +29,7 @@ func tableYMLKeyValue(ctx context.Context) *plugin.Table {
 		},
 		Columns: []*plugin.Column{
 			{Name: "path", Type: proto.ColumnType_STRING, Description: "Specifies the path of the YML file."},
-			{Name: "key_path", Type: proto.ColumnType_STRING, Transform: transform.FromField("Key").Transform(keysToSnakeCase), Description: "Specifies full path of a key in YML file."},
+			{Name: "key_path", Type: proto.ColumnType_LTREE, Transform: transform.FromField("Key").Transform(keysToSnakeCase), Description: "Specifies full path of a key in YML file."},
 			{Name: "value", Type: proto.ColumnType_STRING, Description: "Specifies the value of the corresponding key."},
 			{Name: "keys", Type: proto.ColumnType_JSON, Transform: transform.FromField("Key"), Description: "The array representation of path of a key."},
 			{Name: "tag", Type: proto.ColumnType_STRING, Description: "Specifies the data type of the value."},
