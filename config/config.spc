@@ -2,8 +2,8 @@ connection "config" {
   plugin = "config"
   
   # Paths is a list of locations to search for files.
-  # Wildcards are supported per https://golang.org/pkg/path/filepath/#Match
+  # Wildcard based searches are supported.
   # Exact file paths can have any name. Wildcard based matches must have an
-  # extension (case insensitive).
+  # extension, i.e. `.ini` (case insensitive)(case insensitive).
   paths = [ "./*" ]
 }
