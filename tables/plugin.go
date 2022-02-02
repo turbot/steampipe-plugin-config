@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/bmatcuk/doublestar"
 	"github.com/turbot/steampipe-plugin-sdk/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/plugin/transform"
 )
@@ -70,7 +71,7 @@ func fileList(ctx context.Context, p *plugin.Connection, fileType string) ([]str
 
 		if strings.Contains(fullPath, "*") {
 			// Expand globs
-			iMatches, err := expandGlobs(fullPath)
+			iMatches, err := doublestar.Glob(fullPath)
 			if err != nil {
 				return matches, fmt.Errorf("path is not a valid glob: %s", i)
 			}
@@ -89,7 +90,7 @@ func fileList(ctx context.Context, p *plugin.Connection, fileType string) ([]str
 			}
 
 			// Expand globs
-			iMatches, err := expandGlobs(fullPath)
+			iMatches, err := doublestar.Glob(fullPath)
 			if err != nil {
 				return matches, fmt.Errorf("path is not a valid glob: %s", fullPath)
 			}
