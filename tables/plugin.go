@@ -25,6 +25,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		TableMap: map[string]*plugin.Table{
 			"ini_key_value": tableINIKeyValue(ctx),
 			"ini_section":   tableINISection(ctx),
+			"json_file":     tableJSONFile(ctx),
 			"yml_file":      tableYMLFile(ctx),
 			"yml_key_value": tableYMLKeyValue(ctx),
 		},
@@ -121,6 +122,10 @@ func fileList(ctx context.Context, p *plugin.Connection, fileType string) ([]str
 		switch fileType {
 		case ".ini":
 			if ext == ".ini" {
+				filePaths = append(filePaths, i)
+			}
+		case ".json":
+			if ext == ".json" {
 				filePaths = append(filePaths, i)
 			}
 		case ".yml":
