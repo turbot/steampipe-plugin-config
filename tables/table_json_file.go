@@ -66,7 +66,10 @@ func listJSONFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		byteValue, _ := ioutil.ReadAll(jsonFile)
 
 		var result map[string]interface{}
-		json.Unmarshal([]byte(byteValue), &result)
+		err = json.Unmarshal([]byte(byteValue), &result)
+		if err != nil {
+			return nil, fmt.Errorf("fail to unmarshal data: %v", err)
+		}
 
 		d.StreamListItem(ctx, parseJSONContent{path, result})
 	}
