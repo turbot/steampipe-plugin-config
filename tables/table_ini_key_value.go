@@ -27,7 +27,7 @@ func tableINIKeyValue(ctx context.Context) *plugin.Table {
 			},
 		},
 		Columns: []*plugin.Column{
-			{Name: "path", Type: proto.ColumnType_STRING, Description: "Specifies the path of the ini file."},
+			{Name: "path", Type: proto.ColumnType_STRING, Description: "Specifies the path of the INI file."},
 			{Name: "section", Type: proto.ColumnType_STRING, Description: "Specifies the name of the section."},
 			{Name: "key", Type: proto.ColumnType_STRING, Description: "The name of the key."},
 			{Name: "value", Type: proto.ColumnType_STRING, Description: "The value of corresponding key."},

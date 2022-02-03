@@ -24,7 +24,7 @@ func tableYMLFile(ctx context.Context) *plugin.Table {
 			},
 		},
 		Columns: []*plugin.Column{
-			{Name: "path", Type: proto.ColumnType_STRING, Description: "Specifies the path of the ini file."},
+			{Name: "path", Type: proto.ColumnType_STRING, Description: "Specifies the path of the YML file."},
 			{Name: "content", Type: proto.ColumnType_JSON, Description: "Specifies the file content in JSON format."},
 		},
 	}

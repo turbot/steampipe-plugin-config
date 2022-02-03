@@ -24,7 +24,7 @@ func tableINISection(ctx context.Context) *plugin.Table {
 			},
 		},
 		Columns: []*plugin.Column{
-			{Name: "path", Type: proto.ColumnType_STRING, Description: "Specifies the path of the ini file."},
+			{Name: "path", Type: proto.ColumnType_STRING, Description: "Specifies the path of the INI file."},
 			{Name: "section", Type: proto.ColumnType_STRING, Description: "Specifies the name of the section."},
 			{Name: "comment", Type: proto.ColumnType_STRING, Description: "The short notes used to describe the key."},
 		},
