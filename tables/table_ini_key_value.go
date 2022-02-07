@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -45,14 +46,24 @@ type parseFormat struct {
 }
 
 func listINIWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
-	// Search for INI files to create as tables
-	paths, err := fileList(ctx, d.Connection, ".ini")
-	if err != nil {
-		return nil, err
-	}
-
+	// #1 - Path via qual
+	// If the path was requested through qualifier then match it exactly. Globs
+	// are not supported in this context since the output value for the column
+	// will never match the requested value.
+	//
+	// #2 - Path via glob paths in config
+	var paths []string
 	if d.KeyColumnQuals["path"] != nil {
-		paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
+		ext := strings.ToLower(filepath.Ext(d.KeyColumnQuals["path"].GetStringValue()))
+		if ext == ".ini" {
+			paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
+		}
+	} else {
+		var err error
+		paths, err = fileList(ctx, d.Connection, ".ini")
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	for _, path := range paths {
@@ -61,7 +72,8 @@ func listINIWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 		opts.AllowPythonMultilineValues = true
 		cfg, err := ini.LoadSources(opts, path)
 		if err != nil {
-			return nil, fmt.Errorf("fail to read file: %v", err)
+			plugin.Logger(ctx).Error("ini_key_value.listINIWithPath", "file_error", err, "path", path)
+			return nil, fmt.Errorf("failed to read file: %v", err)
 		}
 
 		for _, i := range cfg.Sections() {

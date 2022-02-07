@@ -12,7 +12,7 @@ og_image: "/images/plugins/turbot/config-social-graphic.png"
 
 # Config + Steampipe
 
-Config plugin is used to parse various types of files to represent the content as a SQL table.
+Config plugin is used to parse various types of configuration files, e.g., `INI`, `JSON`, `YML`, in order to represent the content as SQL tables.
 
 [Steampipe](https://steampipe.io) is an open source CLI to instantly query data using SQL.
 
@@ -71,14 +71,13 @@ connection "config" {
   plugin = "config"
   
   # Paths is a list of locations to search for files.
-  # Wildcard based searches are supported.
-  # Exact file paths can have any name. Wildcard based matches must have an
-  # extension, i.e. `.ini` (case insensitive).
+  # Wildcard based searches are supported, i.e. `/path/to/dir/*`, `*`, `**`, etc.
+  # Exact file paths can have any name.
   paths = [ "./*" ]
 }
 ```
 
-- `paths` - A list of directory paths to search for files. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match). File matches must have the required extension, i.e. `.ini` (case insensitive).
+- `paths` - A list of directory paths to search for files. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match). File matches must have the required extension, e.g., `.ini`, `.json`, `.yml` (case insensitive).
 
 ## Get involved
 
