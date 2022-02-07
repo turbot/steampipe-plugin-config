@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
+	"strings"
 
 	"github.com/turbot/steampipe-plugin-sdk/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/plugin"
@@ -44,7 +46,10 @@ func listYMLFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 	// #2 - Path via glob paths in config
 	var paths []string
 	if d.KeyColumnQuals["path"] != nil {
-		paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
+		ext := strings.ToLower(filepath.Ext(d.KeyColumnQuals["path"].GetStringValue()))
+		if ext == ".yml" || ext == ".yaml" {
+			paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
+		}
 	} else {
 		var err error
 		paths, err = fileList(ctx, d.Connection, ".yml")
@@ -57,14 +62,16 @@ func listYMLFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 		// Read file
 		content, err := ioutil.ReadFile(path)
 		if err != nil {
-			return nil, fmt.Errorf("fail to read file: %v", err)
+			plugin.Logger(ctx).Error("yml_file.listYMLFileWithPath", "file_error", err, "path", path)
+			return nil, fmt.Errorf("failed to read file: %v", err)
 		}
 
 		// Decoding the file content
 		var data interface{}
 		err = yaml.Unmarshal(content, &data)
 		if err != nil {
-			return nil, fmt.Errorf("fail to unmarshal file content: %v", err)
+			plugin.Logger(ctx).Error("yml_file.listYMLFileWithPath", "parse_error", err, "path", path)
+			return nil, fmt.Errorf("failed to unmarshal file content: %v", err)
 		}
 		d.StreamListItem(ctx, parseYMLContent{path, data})
 	}

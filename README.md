@@ -2,7 +2,7 @@
 
 # Config Plugin for Steampipe
 
-Use SQL to query data from various types of files, e.g. `.ini`, `.yml`, `.json`.
+Use SQL to query data from various types of files, e.g. `INI`, `YML`, `JSON`.
 
 - **[Get started →](https://hub.steampipe.io/plugins/turbot/config)**
 - Documentation: [Table definitions & examples](https://hub.steampipe.io/plugins/turbot/config/tables)

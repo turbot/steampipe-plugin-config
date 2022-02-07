@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/turbot/steampipe-plugin-sdk/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/plugin"
@@ -43,13 +45,18 @@ func listJSONKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 	// will never match the requested value.
 	//
 	// #2 - Path via glob paths in config
-	paths, err := fileList(ctx, d.Connection, ".json")
-	if err != nil {
-		return nil, err
-	}
-
+	var paths []string
 	if d.KeyColumnQuals["path"] != nil {
-		paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
+		ext := strings.ToLower(filepath.Ext(d.KeyColumnQuals["path"].GetStringValue()))
+		if ext == ".json" {
+			paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
+		}
+	} else {
+		var err error
+		paths, err = fileList(ctx, d.Connection, ".json")
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	for _, path := range paths {
@@ -57,7 +64,7 @@ func listJSONKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 		reader, err := os.Open(path)
 		if err != nil {
 			// Could not open the file, so log and ignore
-			plugin.Logger(ctx).Error("listJSONKeyValue", "file_error", err, "path", path)
+			plugin.Logger(ctx).Error("json_key_value.listJSONKeyValue", "file_error", err, "path", path)
 			return nil, nil
 		}
 
@@ -65,8 +72,8 @@ func listJSONKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 		decoder := yaml.NewDecoder(reader)
 		err = decoder.Decode(&root)
 		if err != nil {
-			plugin.Logger(ctx).Error("listJSONKeyValue", "parse_error", err, "path", path)
-			return nil, fmt.Errorf("failed to parse file %s: %v", path, err)
+			plugin.Logger(ctx).Error("json_key_value.listJSONKeyValue", "parse_error", err, "path", path)
+			return nil, fmt.Errorf("failed to parse file: %v", err)
 		}
 
 		var rows Rows

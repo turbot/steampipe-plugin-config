@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/turbot/steampipe-plugin-sdk/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/plugin"
@@ -45,7 +47,10 @@ func listJSONFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	// #2 - Path via glob paths in config
 	var paths []string
 	if d.KeyColumnQuals["path"] != nil {
-		paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
+		ext := strings.ToLower(filepath.Ext(d.KeyColumnQuals["path"].GetStringValue()))
+		if ext == ".json" {
+			paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
+		}
 	} else {
 		var err error
 		paths, err = fileList(ctx, d.Connection, ".json")
@@ -57,6 +62,7 @@ func listJSONFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	for _, path := range paths {
 		jsonFile, err := os.Open(path)
 		if err != nil {
+			plugin.Logger(ctx).Error("json_file.listJSONFileWithPath", "file_error", err, "path", path)
 			return nil, fmt.Errorf("fail to read file: %v", err)
 		}
 
@@ -68,7 +74,8 @@ func listJSONFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		var result map[string]interface{}
 		err = json.Unmarshal([]byte(byteValue), &result)
 		if err != nil {
-			return nil, fmt.Errorf("fail to unmarshal data: %v", err)
+			plugin.Logger(ctx).Error("json_file.listJSONFileWithPath", "parse_error", err, "path", path)
+			return nil, fmt.Errorf("failed to unmarshal data: %v", err)
 		}
 
 		d.StreamListItem(ctx, parseJSONContent{path, result})

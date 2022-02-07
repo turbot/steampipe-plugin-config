@@ -12,7 +12,7 @@ og_image: "/images/plugins/turbot/config-social-graphic.png"
 
 # Config + Steampipe
 
-Config plugin is used to parse various types of files to represent the content as a SQL table.
+Config plugin is used to parse various types of files(i.e. `INI`, `YML`, `JSON`) to represent the content as a SQL table.
 
 [Steampipe](https://steampipe.io) is an open source CLI to instantly query data using SQL.
 

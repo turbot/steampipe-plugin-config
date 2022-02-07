@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -52,7 +53,10 @@ func listYMLKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 	// #2 - Path via glob paths in config
 	var paths []string
 	if d.KeyColumnQuals["path"] != nil {
-		paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
+		ext := strings.ToLower(filepath.Ext(d.KeyColumnQuals["path"].GetStringValue()))
+		if ext == ".yml" || ext == ".yaml" {
+			paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
+		}
 	} else {
 		var err error
 		paths, err = fileList(ctx, d.Connection, ".yml")
@@ -66,7 +70,7 @@ func listYMLKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 		reader, err := os.Open(path)
 		if err != nil {
 			// Could not open the file, so log and ignore
-			plugin.Logger(ctx).Error("listYMLKeyValue", "file_error", err, "path", path)
+			plugin.Logger(ctx).Error("yml_key_value.listYMLKeyValue", "file_error", err, "path", path)
 			return nil, nil
 		}
 
@@ -74,8 +78,8 @@ func listYMLKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 		decoder := yaml.NewDecoder(reader)
 		err = decoder.Decode(&root)
 		if err != nil {
-			plugin.Logger(ctx).Error("listYMLKeyValue", "parse_error", err, "path", path)
-			return nil, fmt.Errorf("failed to parse file %s: %v", path, err)
+			plugin.Logger(ctx).Error("yml_key_value.listYMLKeyValue", "parse_error", err, "path", path)
+			return nil, fmt.Errorf("failed to parse file: %v", err)
 		}
 
 		var rows Rows
