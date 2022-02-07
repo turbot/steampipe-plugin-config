@@ -2,10 +2,10 @@
 organization: Turbot
 category: ["software development"]
 icon_url: "/images/plugins/turbot/config.svg"
-brand_color: "#808080"
+brand_color: "#222017"
 display_name: "Config"
 short_name: "config"
-description: "Steampipe plugin to query data from various types of files, e.g. `.ini`."
+description: "Steampipe plugin to query data from various types of files, e.g. `.ini`, `.yml`, `.json`."
 og_description: "Query data from various types of files with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/config-social-graphic.png"
 ---
@@ -70,13 +70,12 @@ Installing the latest config plugin will create a config file (`~/.steampipe/con
 connection "config" {
   plugin = "config"
   
-  # Paths is a list of locations to search for files. Each file will be
-  # converted to a table. Wildcards are supported per
-  # https://golang.org/pkg/path/filepath/#Match
+  # Paths is a list of locations to search for files.
+  # Wildcard based searches are supported.
   # Exact file paths can have any name. Wildcard based matches must have an
-  # extension of .ini (case insensitive).
-  paths = [ "/path/to/dir/*", "/path/to/exact/custom.ini" ]
-
+  # extension, i.e. `.ini` (case insensitive).
+  paths = [ "./*" ]
+}
 ```
 
 - `paths` - A list of directory paths to search for files. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match). File matches must have the required extension, i.e. `.ini` (case insensitive).
