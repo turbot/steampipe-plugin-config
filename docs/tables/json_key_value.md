@@ -186,3 +186,51 @@ from
 group by
   item;
 ```
+
+### Searching key paths
+
+The `Ltree` implements a materialized path, which is pretty quick for `SELECT` operations. This table uses `key_path` column of type `ltree` to represent the path in a hierarchical tree-like structure.
+
+For example, from above mentioned sample JSON file,
+you can easily query all the `part_no` using path match,
+
+```sql
+select
+  value as part_no
+from
+  json_key_value
+where
+  path = '/Users/myuser/json/invoice.json'
+  and key_path ~ 'items.*.part_no';
+```
+
+```sh
++---------+
+| part_no |
++---------+
+| E1628   |
+| A4786   |
++---------+
+```
+
+or, you can fetch all details provided inside `customer` node,
+
+```sql
+select
+  key_path,
+  value
+from
+  json_key_value
+where
+  path = '/Users/myuser/json/invoice.json'
+  and key_path <@ 'customer';
+```
+
+```sh
++----------------------+---------+
+| key_path             | value   |
++----------------------+---------+
+| customer.first_name  | Dorothy |
+| customer.family_name | Gale    |
++----------------------+---------+
+```

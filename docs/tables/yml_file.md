@@ -162,7 +162,7 @@ Text columns can be easily cast to other types:
 
 ```sql
 select
-  content ->> 'date' as order_date,
+  (content ->> 'date')::timestamp as order_date,
   concat(content -> 'customer' ->> 'first_name', ' ', content -> 'customer' ->> 'family_name') as customer_name,
   item ->> 'description' as description,
   (item ->> 'price')::float as price,
@@ -173,4 +173,13 @@ from
   jsonb_array_elements(content -> 'items') as item
 where
   path = '/Users/myuser/yml/invoice.yml';
+```
+
+```sh
++---------------------+---------------+-----------------------------+-------+----------+-------+
+| order_date          | customer_name | description                 | price | quantity | total |
++---------------------+---------------+-----------------------------+-------+----------+-------+
+| 2012-08-06 00:00:00 | Dorothy Gale  | Water Bucket (Filled)       | 1.47  | 4        | 5.88  |
+| 2012-08-06 00:00:00 | Dorothy Gale  | High Heeled "Ruby" Slippers | 133.7 | 1        | 133.7 |
++---------------------+---------------+-----------------------------+-------+----------+-------+
 ```
