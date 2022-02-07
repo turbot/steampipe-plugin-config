@@ -71,38 +71,29 @@ func fileList(ctx context.Context, p *plugin.Connection, fileType string) ([]str
 			return nil, err
 		}
 
-		if strings.Contains(fullPath, "*") {
-			// Expand globs
-			iMatches, err := doublestar.Glob(fullPath)
-			if err != nil {
-				return matches, fmt.Errorf("path is not a valid glob: %s", i)
-			}
-			matches = append(matches, iMatches...)
-		} else {
-			// Check file or diretory
-			fileInfo, err := os.Stat(fullPath)
-			if err != nil {
-				plugin.Logger(ctx).Error("fileList", "error reading file path", err)
-				return nil, err
-			}
-
-			// If directory, fetch all files
-			if fileInfo.IsDir() {
-				fullPath = filepath.Join(fullPath, "*")
-			}
-
-			// Expand globs
-			iMatches, err := doublestar.Glob(fullPath)
-			if err != nil {
-				return matches, fmt.Errorf("path is not a valid glob: %s", fullPath)
-			}
-			matches = append(matches, iMatches...)
+		// Expand globs
+		iMatches, err := doublestar.Glob(fullPath)
+		if err != nil {
+			return matches, fmt.Errorf("path is not a valid glob: %s", i)
 		}
+		matches = append(matches, iMatches...)
 	}
 
 	// Sanitize the matches to likely files
 	var filePaths []string
 	for _, i := range matches {
+		// Check file or directory
+		fileInfo, err := os.Stat(i)
+		if err != nil {
+			plugin.Logger(ctx).Error("fileList", "error reading file path", err)
+			return nil, err
+		}
+
+		// Ignore, if given path is a directory
+		if fileInfo.IsDir() {
+			continue
+		}
+
 		// If the file path is an exact match to a matrix path then it's always
 		// treated as a match - it was requested exactly
 		hit := false

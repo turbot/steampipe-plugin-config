@@ -2,10 +2,10 @@
 organization: Turbot
 category: ["software development"]
 icon_url: "/images/plugins/turbot/config.svg"
-brand_color: "#808080"
+brand_color: "#222017"
 display_name: "Config"
 short_name: "config"
-description: "Steampipe plugin to query data from various types of files, e.g. `.ini`."
+description: "Steampipe plugin to query data from various types of files, e.g. `.ini`, `.yml`, `.json`."
 og_description: "Query data from various types of files with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/config-social-graphic.png"
 ---
@@ -71,9 +71,8 @@ connection "config" {
   plugin = "config"
   
   # Paths is a list of locations to search for files.
-  # Wildcard based searches are supported.
-  # Exact file paths can have any name. Wildcard based matches must have an
-  # extension, i.e. `.ini` (case insensitive)(case insensitive).
+  # Wildcard based searches are supported, i.e. `/path/to/dir/*`, `*`, `**`, etc.
+  # Exact file paths can have any name.
   paths = [ "./*" ]
 }
 ```
