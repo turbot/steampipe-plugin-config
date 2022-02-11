@@ -1,8 +1,8 @@
 # Table: ini_key_value
 
-Query section and key-value pair data from INI files found in the configured `paths`.
+Query section and key-value pair data from INI files found in the configured `ini_paths`.
 
-For instance, if `paths` is set to `/Users/myuser/ini/*`, and that directory contains:
+For instance, if `ini_paths` is set to `[ "/Users/myuser/ini/*.ini" ]`, and that directory contains:
 
 - defaults.ini
 - sample.ini
@@ -54,6 +54,20 @@ from
   ini_key_value
 where
   path = '/Users/myuser/ini/defaults.ini';
+```
+
+```sh
++--------------------------------+-------------------------------+-------------------------------+---------------------------+-----------------------------+
+| path                           | section                       | key                           | value                     | comment                     |
++--------------------------------+-------------------------------+-------------------------------+---------------------------+-----------------------------+
+| /Users/myuser/ini/defaults.ini | analytics                     | check_for_updates             | false                     |                             |
+| /Users/myuser/ini/defaults.ini | auth.google                   | client_secret                 | 0ldS3cretKey              |                             |
+| /Users/myuser/ini/defaults.ini | database                      | port                          | 8080                      |                             |
+| /Users/myuser/ini/defaults.ini | database                      | url                           | http://localhost:8080/    |                             |
+| /Users/myuser/ini/defaults.ini | DEFAULT                       | instance_name                 | my-instance               |                             |
+| /Users/myuser/ini/defaults.ini | plugin.grafana-image-renderer | rendering_ignore_https_errors | true                      |                             |
+| /Users/myuser/ini/defaults.ini | security                      | admin_user                    | admin                     |                             |
++--------------------------------+-------------------------------+-------------------------------+---------------------------+-----------------------------+
 ```
 
 ## Examples
@@ -119,12 +133,21 @@ where
   and key = 'check_for_updates';
 ```
 
+```sh
++-------------------------------+-------------------------------+--------------+
+| section                       | key                           | value        |
++-------------------------------+-------------------------------+--------------+
+| analytics                     | check_for_updates             | false        |
++-------------------------------+-------------------------------+--------------+
+```
+
 ### Casting column data for analysis
 
 Text columns can be easily cast to other types:
 
 ```sql
 select
+  section,
   key,
   value::bool
 from
@@ -136,7 +159,15 @@ where
   and not value::bool;
 ```
 
-### Query file with interpolation of values
+```sh
++-------------------------------+-------------------------------+--------------+
+| section                       | key                           | value        |
++-------------------------------+-------------------------------+--------------+
+| analytics                     | check_for_updates             | false        |
++-------------------------------+-------------------------------+--------------+
+```
+
+### Query a file with value interpolation
 
 Given the file `defaults.ini` with following configuration:
 
@@ -158,14 +189,15 @@ url = http://localhost:%(port)s/
 rendering_ignore_https_errors = true
 ```
 
-and, the environment variable `HOSTNAME` configured with:
+and the environment variable `HOSTNAME`:
 
 ```sh
 export HOSTNAME=my-instance
 ```
 
-In the above INI file, the value for `instance_name` refers to an environment variable `${HOSTNAME}`, and `url` refers to other values in the same section.
-When querying the specific field, the table will store the actual value of `${HOSTNAME}`, i.e., `my-instance`.
+In the above INI file, the value for `instance_name` refers to an environment variable `${HOSTNAME}` and `url` refers to other another value in the same section.
+
+When querying values, the table will store the interpolated values, e.g., `${HOSTNAME}` will be stored as `my-instance`.
 
 ```sql
 select

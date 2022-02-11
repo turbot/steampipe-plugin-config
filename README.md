@@ -17,7 +17,7 @@ Install the plugin with [Steampipe](https://steampipe.io):
 steampipe plugin install config
 ```
 
-Configure your [config file](https://hub.steampipe.io/plugins/turbot/config#configuration) to include directories with files to be parsed. If no directory is specified, the current working directory will be used.
+Configure your [config file](https://hub.steampipe.io/plugins/turbot/config#configuration) for each supported file type to include directories with files to be parsed. For any of the `paths` arguments, if no directory is specified, the current working directory will be used.
 
 Run steampipe:
 
@@ -37,34 +37,123 @@ from
   ini_key_value;
 ```
 
-or, you can query configurations of a particular file using:
+```sh
++--------------------------------+----------+---------------+-------------------------------------------+
+| path                           | section  | key           | value                                     |
++--------------------------------+----------+---------------+-------------------------------------------+
+| /Users/myuser/ini/defaults.ini | Settings | DetailedLog   | 1                                         |
+| /Users/myuser/ini/defaults.ini | Status   | RunStatus     | 1                                         |
+| /Users/myuser/ini/defaults.ini | Status   | StatusRefresh | 10                                        |
+| /Users/myuser/ini/defaults.ini | Status   | StatusPort    | 6090                                      |
+| /Users/myuser/ini/logs.ini     | Server   | Archive       | 1                                         |
+| /Users/myuser/ini/logs.ini     | Server   | ServerName    | Unknown                                   |
+| /Users/myuser/ini/logs.ini     | Settings | LogFile       | /opt/ecs/mvuser/MV_IPTel/log/MV_IPTel.log |
+| /Users/myuser/ini/logs.ini     | Settings | Version       | 0.9 Build 4 Created July 11 2004 14:00    |
++--------------------------------+----------+---------------+-------------------------------------------+
+```
+
+Query all data in your JSON files:
 
 ```sql
 select
   path,
-  section,
-  key,
-  value
+  jsonb_pretty(content) as file_content
 from
-  ini_key_value
-where
-  path = '/Users/myuser/ini/defaults.ini';
+  json_file;
 ```
 
 ```sh
-> select section, key, value from ini_key_value where section = 'Settings';
-+----------+---------------+-------------------------------------------+
-| section  | key           | value                                     |
-+----------+---------------+-------------------------------------------+
-| Settings | DetailedLog   | 1                                         |
-| Settings | RunStatus     | 1                                         |
-| Settings | StatusRefresh | 10                                        |
-| Settings | StatusPort    | 6090                                      |
-| Settings | Archive       | 1                                         |
-| Settings | ServerName    | Unknown                                   |
-| Settings | LogFile       | /opt/ecs/mvuser/MV_IPTel/log/MV_IPTel.log |
-| Settings | Version       | 0.9 Build 4 Created July 11 2004 14:00    |
-+----------+---------------+-------------------------------------------+
++---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+| path                            | file_content                                                                                                                 |
++---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+| /Users/myuser/json/invoice.json | {                                                                                                                            |
+|                                 |     "city": "East Centerville",                                                                                              |
+|                                 |     "date": "2012-08-06T00:00:00Z",                                                                                          |
+|                                 |     "items": [                                                                                                               |
+|                                 |         {                                                                                                                    |
+|                                 |             "price": 1.47,                                                                                                   |
+|                                 |             "part_no": "A4786",                                                                                              |
+|                                 |             "quantity": 4,                                                                                                   |
+|                                 |             "description": "Water Bucket (Filled)"                                                                           |
+|                                 |         },                                                                                                                   |
+|                                 |         {                                                                                                                    |
+|                                 |             "size": 8,                                                                                                       |
+|                                 |             "price": 133.7,                                                                                                  |
+|                                 |             "part_no": "E1628",                                                                                              |
+|                                 |             "quantity": 1,                                                                                                   |
+|                                 |             "description": "High Heeled \"Ruby\" Slippers"                                                                   |
+|                                 |         }                                                                                                                    |
+|                                 |     ],                                                                                                                       |
+|                                 |     "state": "KS",                                                                                                           |
+|                                 |     "street": "123 Tornado Alley\nSuite 16\n",                                                                               |
+|                                 |     "bill-to": null,                                                                                                         |
+|                                 |     "receipt": "Oz-Ware Purchase Invoice",                                                                                   |
+|                                 |     "ship-to": null,                                                                                                         |
+|                                 |     "customer": {                                                                                                            |
+|                                 |         "first_name": "Dorothy",                                                                                             |
+|                                 |         "family_name": "Gale"                                                                                                |
+|                                 |     },                                                                                                                       |
+|                                 |     "specialDelivery": "Follow the Yellow Brick Road to the Emerald City. Pay no attention to the man behind the curtain.\n" |
+|                                 | }                                                                                                                            |
+| /Users/myuser/json/test.json    | {                                                                                                                            |
+|                                 |     "foo": "bar",                                                                                                            |
+|                                 |     "includes": [                                                                                                            |
+|                                 |         "common.json"                                                                                                        |
+|                                 |     ]                                                                                                                        |
+|                                 | }                                                                                                                            |
++---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+```
+
+Query all data in your YML files:
+
+```sql
+select
+  path,
+  jsonb_pretty(content) as file_content
+from
+  yml_file;
+```
+
+```sh
++--------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+| path                           | file_content                                                                                                                 |
++--------------------------------+------------------------------------------------------------------------------------------------------------------------------+
+| /Users/myuser/yml/invoice.yml  | {                                                                                                                            |
+|                                |     "city": "East Centerville",                                                                                              |
+|                                |     "date": "2012-08-06T00:00:00Z",                                                                                          |
+|                                |     "items": [                                                                                                               |
+|                                |         {                                                                                                                    |
+|                                |             "price": 1.47,                                                                                                   |
+|                                |             "part_no": "A4786",                                                                                              |
+|                                |             "quantity": 4,                                                                                                   |
+|                                |             "description": "Water Bucket (Filled)"                                                                           |
+|                                |         },                                                                                                                   |
+|                                |         {                                                                                                                    |
+|                                |             "size": 8,                                                                                                       |
+|                                |             "price": 133.7,                                                                                                  |
+|                                |             "part_no": "E1628",                                                                                              |
+|                                |             "quantity": 1,                                                                                                   |
+|                                |             "description": "High Heeled \"Ruby\" Slippers"                                                                   |
+|                                |         }                                                                                                                    |
+|                                |     ],                                                                                                                       |
+|                                |     "state": "KS",                                                                                                           |
+|                                |     "street": "123 Tornado Alley\nSuite 16\n",                                                                               |
+|                                |     "bill-to": null,                                                                                                         |
+|                                |     "receipt": "Oz-Ware Purchase Invoice",                                                                                   |
+|                                |     "ship-to": null,                                                                                                         |
+|                                |     "customer": {                                                                                                            |
+|                                |         "first_name": "Dorothy",                                                                                             |
+|                                |         "family_name": "Gale"                                                                                                |
+|                                |     },                                                                                                                       |
+|                                |     "specialDelivery": "Follow the Yellow Brick Road to the Emerald City. Pay no attention to the man behind the curtain.\n" |
+|                                | }                                                                                                                            |
+| /Users/myuser/yml/test.yaml    | {                                                                                                                            |
+|                                |     "foo": "bar",                                                                                                            |
+|                                |     "includes": [                                                                                                            |
+|                                |         "common.yaml"                                                                                                        |
+|                                |     ]                                                                                                                        |
+|                                | }                                                                                                                            |
++--------------------------------+------------------------------------------------------------------------------------------------------------------------------+
 ```
 
 ## Developing
