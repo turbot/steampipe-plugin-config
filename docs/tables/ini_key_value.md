@@ -57,17 +57,17 @@ where
 ```
 
 ```sh
-+--------------------------------+-------------------------------+-------------------------------+---------------------------+-----------------------------+
-| path                           | section                       | key                           | value                     | comment                     |
-+--------------------------------+-------------------------------+-------------------------------+---------------------------+-----------------------------+
-| /Users/myuser/ini/defaults.ini | analytics                     | check_for_updates             | false                     |                             |
-| /Users/myuser/ini/defaults.ini | auth.google                   | client_secret                 | 0ldS3cretKey              |                             |
-| /Users/myuser/ini/defaults.ini | database                      | port                          | 8080                      |                             |
-| /Users/myuser/ini/defaults.ini | database                      | url                           | http://localhost:8080/    |                             |
-| /Users/myuser/ini/defaults.ini | DEFAULT                       | instance_name                 | my-instance               |                             |
-| /Users/myuser/ini/defaults.ini | plugin.grafana-image-renderer | rendering_ignore_https_errors | true                      |                             |
-| /Users/myuser/ini/defaults.ini | security                      | admin_user                    | admin                     |                             |
-+--------------------------------+-------------------------------+-------------------------------+---------------------------+-----------------------------+
++--------------------------------+-------------------------------+-------------------------------+---------------------------+---------+
+| path                           | section                       | key                           | value                     | comment |
++--------------------------------+-------------------------------+-------------------------------+---------------------------+---------+
+| /Users/myuser/ini/defaults.ini | analytics                     | check_for_updates             | false                     |         |
+| /Users/myuser/ini/defaults.ini | auth.google                   | client_secret                 | 0ldS3cretKey              |         |
+| /Users/myuser/ini/defaults.ini | database                      | port                          | 8080                      |         |
+| /Users/myuser/ini/defaults.ini | database                      | url                           | http://localhost:8080/    |         |
+| /Users/myuser/ini/defaults.ini | DEFAULT                       | instance_name                 | my-instance               |         |
+| /Users/myuser/ini/defaults.ini | plugin.grafana-image-renderer | rendering_ignore_https_errors | true                      |         |
+| /Users/myuser/ini/defaults.ini | security                      | admin_user                    | admin                     |         |
++--------------------------------+-------------------------------+-------------------------------+---------------------------+---------+
 ```
 
 ## Examples
@@ -122,7 +122,8 @@ where
 or, you can check the value for a particular key:
 
 ```sql
-select
+select,
+  section,
   key,
   value
 from
@@ -134,11 +135,11 @@ where
 ```
 
 ```sh
-+-------------------------------+-------------------------------+--------------+
-| section                       | key                           | value        |
-+-------------------------------+-------------------------------+--------------+
-| analytics                     | check_for_updates             | false        |
-+-------------------------------+-------------------------------+--------------+
++-----------+-------------------+-------+
+| section   | key               | value |
++-----------+-------------------+-------+
+| analytics | check_for_updates | false |
++-----------+-------------------+-------+
 ```
 
 ### Casting column data for analysis
@@ -160,11 +161,11 @@ where
 ```
 
 ```sh
-+-------------------------------+-------------------------------+--------------+
-| section                       | key                           | value        |
-+-------------------------------+-------------------------------+--------------+
-| analytics                     | check_for_updates             | false        |
-+-------------------------------+-------------------------------+--------------+
++-----------+-------------------+-------+
+| section   | key               | value |
++-----------+-------------------+-------+
+| analytics | check_for_updates | false |
++-----------+-------------------+-------+
 ```
 
 ### Query a file with value interpolation
