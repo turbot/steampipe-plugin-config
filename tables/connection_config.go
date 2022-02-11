@@ -6,11 +6,21 @@ import (
 )
 
 type parseConfig struct {
-	Paths []string `cty:"paths"`
+	INIPaths  []string `cty:"ini_paths"`
+	JSONPaths []string `cty:"json_paths"`
+	YMLPaths  []string `cty:"yml_paths"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{
-	"paths": {
+	"ini_paths": {
+		Type: schema.TypeList,
+		Elem: &schema.Attribute{Type: schema.TypeString},
+	},
+	"json_paths": {
+		Type: schema.TypeList,
+		Elem: &schema.Attribute{Type: schema.TypeString},
+	},
+	"yml_paths": {
 		Type: schema.TypeList,
 		Elem: &schema.Attribute{Type: schema.TypeString},
 	},

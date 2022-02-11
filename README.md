@@ -17,7 +17,7 @@ Install the plugin with [Steampipe](https://steampipe.io):
 steampipe plugin install config
 ```
 
-Configure your [config file](https://hub.steampipe.io/plugins/turbot/config#configuration).
+Configure your [config file](https://hub.steampipe.io/plugins/turbot/config#configuration) to include directories with files to be parsed. If no directory is specified, the current working directory will be used.
 
 Run steampipe:
 
