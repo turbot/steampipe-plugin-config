@@ -38,18 +38,18 @@ from
 ```
 
 ```sh
-+--------------------------------+----------+---------------+-------------------------------------------+
-| path                           | section  | key           | value                                     |
-+--------------------------------+----------+---------------+-------------------------------------------+
-| /Users/myuser/ini/defaults.ini | Settings | DetailedLog   | 1                                         |
-| /Users/myuser/ini/defaults.ini | Status   | RunStatus     | 1                                         |
-| /Users/myuser/ini/defaults.ini | Status   | StatusRefresh | 10                                        |
-| /Users/myuser/ini/defaults.ini | Status   | StatusPort    | 6090                                      |
-| /Users/myuser/ini/logs.ini     | Server   | Archive       | 1                                         |
-| /Users/myuser/ini/logs.ini     | Server   | ServerName    | Unknown                                   |
-| /Users/myuser/ini/logs.ini     | Settings | LogFile       | /opt/ecs/mvuser/MV_IPTel/log/MV_IPTel.log |
-| /Users/myuser/ini/logs.ini     | Settings | Version       | 0.9 Build 4 Created July 11 2004 14:00    |
-+--------------------------------+----------+---------------+-------------------------------------------+
++----------------------------+----------+---------------+-------------------------------------------+
+| path                       | section  | key           | value                                     |
++----------------------------+----------+---------------+-------------------------------------------+
+| /Users/myuser/defaults.ini | Settings | DetailedLog   | 1                                         |
+| /Users/myuser/defaults.ini | Status   | RunStatus     | 1                                         |
+| /Users/myuser/defaults.ini | Status   | StatusRefresh | 10                                        |
+| /Users/myuser/defaults.ini | Status   | StatusPort    | 6090                                      |
+| /Users/myuser/logs.ini     | Server   | Archive       | 1                                         |
+| /Users/myuser/logs.ini     | Server   | ServerName    | Unknown                                   |
+| /Users/myuser/logs.ini     | Settings | LogFile       | /opt/ecs/mvuser/MV_IPTel/log/MV_IPTel.log |
+| /Users/myuser/logs.ini     | Settings | Version       | 0.9 Build 4 Created July 11 2004 14:00    |
++----------------------------+----------+---------------+-------------------------------------------+
 ```
 
 Query all data in your JSON files:
@@ -63,45 +63,44 @@ from
 ```
 
 ```sh
-+---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-| path                            | file_content                                                                                                                 |
-+---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-| /Users/myuser/json/invoice.json | {                                                                                                                            |
-|                                 |     "city": "East Centerville",                                                                                              |
-|                                 |     "date": "2012-08-06T00:00:00Z",                                                                                          |
-|                                 |     "items": [                                                                                                               |
-|                                 |         {                                                                                                                    |
-|                                 |             "price": 1.47,                                                                                                   |
-|                                 |             "part_no": "A4786",                                                                                              |
-|                                 |             "quantity": 4,                                                                                                   |
-|                                 |             "description": "Water Bucket (Filled)"                                                                           |
-|                                 |         },                                                                                                                   |
-|                                 |         {                                                                                                                    |
-|                                 |             "size": 8,                                                                                                       |
-|                                 |             "price": 133.7,                                                                                                  |
-|                                 |             "part_no": "E1628",                                                                                              |
-|                                 |             "quantity": 1,                                                                                                   |
-|                                 |             "description": "High Heeled \"Ruby\" Slippers"                                                                   |
-|                                 |         }                                                                                                                    |
-|                                 |     ],                                                                                                                       |
-|                                 |     "state": "KS",                                                                                                           |
-|                                 |     "street": "123 Tornado Alley\nSuite 16\n",                                                                               |
-|                                 |     "bill-to": null,                                                                                                         |
-|                                 |     "receipt": "Oz-Ware Purchase Invoice",                                                                                   |
-|                                 |     "ship-to": null,                                                                                                         |
-|                                 |     "customer": {                                                                                                            |
-|                                 |         "first_name": "Dorothy",                                                                                             |
-|                                 |         "family_name": "Gale"                                                                                                |
-|                                 |     },                                                                                                                       |
-|                                 |     "specialDelivery": "Follow the Yellow Brick Road to the Emerald City. Pay no attention to the man behind the curtain.\n" |
-|                                 | }                                                                                                                            |
-| /Users/myuser/json/test.json    | {                                                                                                                            |
-|                                 |     "foo": "bar",                                                                                                            |
-|                                 |     "includes": [                                                                                                            |
-|                                 |         "common.json"                                                                                                        |
-|                                 |     ]                                                                                                                        |
-|                                 | }                                                                                                                            |
-+---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
++----------------------------+------------------------------------------------------------+
+| path                       | file_content                                               |
++----------------------------+------------------------------------------------------------+
+| /Users/myuser/invoice.json | {                                                          |
+|                            |     "city": "East Centerville",                            |
+|                            |     "date": "2012-08-06T00:00:00Z",                        |
+|                            |     "items": [                                             |
+|                            |         {                                                  |
+|                            |             "price": 1.47,                                 |
+|                            |             "part_no": "A4786",                            |
+|                            |             "quantity": 4,                                 |
+|                            |             "description": "Water Bucket (Filled)"         |
+|                            |         },                                                 |
+|                            |         {                                                  |
+|                            |             "size": 8,                                     |
+|                            |             "price": 133.7,                                |
+|                            |             "part_no": "E1628",                            |
+|                            |             "quantity": 1,                                 |
+|                            |             "description": "High Heeled \"Ruby\" Slippers" |
+|                            |         }                                                  |
+|                            |     ],                                                     |
+|                            |     "state": "KS",                                         |
+|                            |     "street": "123 Tornado Alley\nSuite 16\n",             |
+|                            |     "bill-to": null,                                       |
+|                            |     "receipt": "Oz-Ware Purchase Invoice",                 |
+|                            |     "ship-to": null,                                       |
+|                            |     "customer": {                                          |
+|                            |         "first_name": "Dorothy",                           |
+|                            |         "family_name": "Gale"                              |
+|                            |     },                                                     |
+|                            | }                                                          |
+| /Users/myuser/test.json    | {                                                          |
+|                            |     "foo": "bar",                                          |
+|                            |     "includes": [                                          |
+|                            |         "common.json"                                      |
+|                            |     ]                                                      |
+|                            | }                                                          |
++----------------------------+------------------------------------------------------------+
 ```
 
 Query all data in your YML files:
@@ -115,45 +114,44 @@ from
 ```
 
 ```sh
-+--------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-| path                           | file_content                                                                                                                 |
-+--------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-| /Users/myuser/yml/invoice.yml  | {                                                                                                                            |
-|                                |     "city": "East Centerville",                                                                                              |
-|                                |     "date": "2012-08-06T00:00:00Z",                                                                                          |
-|                                |     "items": [                                                                                                               |
-|                                |         {                                                                                                                    |
-|                                |             "price": 1.47,                                                                                                   |
-|                                |             "part_no": "A4786",                                                                                              |
-|                                |             "quantity": 4,                                                                                                   |
-|                                |             "description": "Water Bucket (Filled)"                                                                           |
-|                                |         },                                                                                                                   |
-|                                |         {                                                                                                                    |
-|                                |             "size": 8,                                                                                                       |
-|                                |             "price": 133.7,                                                                                                  |
-|                                |             "part_no": "E1628",                                                                                              |
-|                                |             "quantity": 1,                                                                                                   |
-|                                |             "description": "High Heeled \"Ruby\" Slippers"                                                                   |
-|                                |         }                                                                                                                    |
-|                                |     ],                                                                                                                       |
-|                                |     "state": "KS",                                                                                                           |
-|                                |     "street": "123 Tornado Alley\nSuite 16\n",                                                                               |
-|                                |     "bill-to": null,                                                                                                         |
-|                                |     "receipt": "Oz-Ware Purchase Invoice",                                                                                   |
-|                                |     "ship-to": null,                                                                                                         |
-|                                |     "customer": {                                                                                                            |
-|                                |         "first_name": "Dorothy",                                                                                             |
-|                                |         "family_name": "Gale"                                                                                                |
-|                                |     },                                                                                                                       |
-|                                |     "specialDelivery": "Follow the Yellow Brick Road to the Emerald City. Pay no attention to the man behind the curtain.\n" |
-|                                | }                                                                                                                            |
-| /Users/myuser/yml/test.yaml    | {                                                                                                                            |
-|                                |     "foo": "bar",                                                                                                            |
-|                                |     "includes": [                                                                                                            |
-|                                |         "common.yaml"                                                                                                        |
-|                                |     ]                                                                                                                        |
-|                                | }                                                                                                                            |
-+--------------------------------+------------------------------------------------------------------------------------------------------------------------------+
++---------------------------+------------------------------------------------------------+
+| path                      | file_content                                               |
++---------------------------+------------------------------------------------------------+
+| /Users/myuser/invoice.yml | {                                                          |
+|                           |     "city": "East Centerville",                            |
+|                           |     "date": "2012-08-06T00:00:00Z",                        |
+|                           |     "items": [                                             |
+|                           |         {                                                  |
+|                           |             "price": 1.47,                                 |
+|                           |             "part_no": "A4786",                            |
+|                           |             "quantity": 4,                                 |
+|                           |             "description": "Water Bucket (Filled)"         |
+|                           |         },                                                 |
+|                           |         {                                                  |
+|                           |             "size": 8,                                     |
+|                           |             "price": 133.7,                                |
+|                           |             "part_no": "E1628",                            |
+|                           |             "quantity": 1,                                 |
+|                           |             "description": "High Heeled \"Ruby\" Slippers" |
+|                           |         }                                                  |
+|                           |     ],                                                     |
+|                           |     "state": "KS",                                         |
+|                           |     "street": "123 Tornado Alley\nSuite 16\n",             |
+|                           |     "bill-to": null,                                       |
+|                           |     "receipt": "Oz-Ware Purchase Invoice",                 |
+|                           |     "ship-to": null,                                       |
+|                           |     "customer": {                                          |
+|                           |         "first_name": "Dorothy",                           |
+|                           |         "family_name": "Gale"                              |
+|                           |     },                                                     |
+|                           | }                                                          |
+| /Users/myuser/test.yaml   | {                                                          |
+|                           |     "foo": "bar",                                          |
+|                           |     "includes": [                                          |
+|                           |         "common.yaml"                                      |
+|                           |     ]                                                      |
+|                           | }                                                          |
++---------------------------+------------------------------------------------------------+
 ```
 
 ## Developing
