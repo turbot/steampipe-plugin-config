@@ -67,7 +67,7 @@ select
 from
   json_file
 where
-  path = '/Users/myuser/json/invoice.json';
+  path = '/Users/myuser/invoice.json';
 ```
 
 ```sh
@@ -149,7 +149,7 @@ select
 from
   json_file
 where
-  path = '/Users/myuser/json/invoice.json';
+  path = '/Users/myuser/invoice.json';
 ```
 
 ```sh
@@ -176,7 +176,7 @@ from
   json_file,
   jsonb_array_elements(content -> 'items') as item
 where
-  path = '/Users/myuser/json/invoice.json';
+  path = '/Users/myuser/invoice.json';
 ```
 
 ```sh
