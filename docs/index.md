@@ -186,12 +186,12 @@ connection "config" {
   #  - "*.json" matches all JSON files in the CWD
   #  - "**/*.json" matches all JSON files in a directory, and all the sub-directories in it
   #  - "../*.json" matches all JSON files in in the CWD's parent directory
-  #  - "steampipe*.json" matches all JSON files starting with "steampipe" in the current CWD
+  #  - "steampipe*.json" matches all JSON files starting with "steampipe" in the CWD
   #  - "/path/to/dir/*.json" matches all JSON files in a specific directory
   #  - "/path/to/dir/main.json" matches a specific file
 
   # If any paths include "*", all files (including non-required files) in
-  # the current CWD will be matched and will attempt to be loaded as that
+  # the CWD will be matched and will attempt to be loaded as that
   # particular file type
 
   # All paths arguments default to CWD
