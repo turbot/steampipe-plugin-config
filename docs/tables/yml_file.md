@@ -67,7 +67,7 @@ select
 from
   yml_file
 where
-  path = '/Users/myuser/yml/invoice.yml';
+  path = '/Users/myuser/invoice.yml';
 ```
 
 ```sh
@@ -148,7 +148,7 @@ select
 from
   yml_file
 where
-  path = '/Users/myuser/yml/invoice.yml';
+  path = '/Users/myuser/invoice.yml';
 ```
 
 ```sh
@@ -175,7 +175,7 @@ from
   yml_file,
   jsonb_array_elements(content -> 'items') as item
 where
-  path = '/Users/myuser/yml/invoice.yml';
+  path = '/Users/myuser/invoice.yml';
 ```
 
 ```sh
