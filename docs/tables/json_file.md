@@ -2,7 +2,7 @@
 
 Query the file contents from JSON files found in the configured `json_paths`.
 
-For instance, if `json_paths` is set to `[ "/Users/myuser/json/*" ]`, and that directory contains:
+For instance, if `json_paths` is set to `[ "/Users/myuser/*.json" ]`, and that directory contains:
 
 - invoice.json
 - test.json
@@ -18,45 +18,44 @@ from
 ```
 
 ```sh
-+---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-| path                            | file_content                                                                                                                 |
-+---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-| /Users/myuser/json/invoice.json | {                                                                                                                            |
-|                                 |     "city": "East Centerville",                                                                                              |
-|                                 |     "date": "2012-08-06T00:00:00Z",                                                                                          |
-|                                 |     "items": [                                                                                                               |
-|                                 |         {                                                                                                                    |
-|                                 |             "price": 1.47,                                                                                                   |
-|                                 |             "part_no": "A4786",                                                                                              |
-|                                 |             "quantity": 4,                                                                                                   |
-|                                 |             "description": "Water Bucket (Filled)"                                                                           |
-|                                 |         },                                                                                                                   |
-|                                 |         {                                                                                                                    |
-|                                 |             "size": 8,                                                                                                       |
-|                                 |             "price": 133.7,                                                                                                  |
-|                                 |             "part_no": "E1628",                                                                                              |
-|                                 |             "quantity": 1,                                                                                                   |
-|                                 |             "description": "High Heeled \"Ruby\" Slippers"                                                                   |
-|                                 |         }                                                                                                                    |
-|                                 |     ],                                                                                                                       |
-|                                 |     "state": "KS",                                                                                                           |
-|                                 |     "street": "123 Tornado Alley\nSuite 16\n",                                                                               |
-|                                 |     "bill-to": null,                                                                                                         |
-|                                 |     "receipt": "Oz-Ware Purchase Invoice",                                                                                   |
-|                                 |     "ship-to": null,                                                                                                         |
-|                                 |     "customer": {                                                                                                            |
-|                                 |         "first_name": "Dorothy",                                                                                             |
-|                                 |         "family_name": "Gale"                                                                                                |
-|                                 |     },                                                                                                                       |
-|                                 |     "specialDelivery": "Follow the Yellow Brick Road to the Emerald City. Pay no attention to the man behind the curtain.\n" |
-|                                 | }                                                                                                                            |
-| /Users/myuser/json/test.json    | {                                                                                                                            |
-|                                 |     "foo": "bar",                                                                                                            |
-|                                 |     "includes": [                                                                                                            |
-|                                 |         "common.json"                                                                                                        |
-|                                 |     ]                                                                                                                        |
-|                                 | }                                                                                                                            |
-+---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
++----------------------------+------------------------------------------------------------+
+| path                       | file_content                                               |
++----------------------------+------------------------------------------------------------+
+| /Users/myuser/invoice.json | {                                                          |
+|                            |     "city": "East Centerville",                            |
+|                            |     "date": "2012-08-06T00:00:00Z",                        |
+|                            |     "items": [                                             |
+|                            |         {                                                  |
+|                            |             "price": 1.47,                                 |
+|                            |             "part_no": "A4786",                            |
+|                            |             "quantity": 4,                                 |
+|                            |             "description": "Water Bucket (Filled)"         |
+|                            |         },                                                 |
+|                            |         {                                                  |
+|                            |             "size": 8,                                     |
+|                            |             "price": 133.7,                                |
+|                            |             "part_no": "E1628",                            |
+|                            |             "quantity": 1,                                 |
+|                            |             "description": "High Heeled \"Ruby\" Slippers" |
+|                            |         }                                                  |
+|                            |     ],                                                     |
+|                            |     "state": "KS",                                         |
+|                            |     "street": "123 Tornado Alley\nSuite 16\n",             |
+|                            |     "bill-to": null,                                       |
+|                            |     "receipt": "Oz-Ware Purchase Invoice",                 |
+|                            |     "ship-to": null,                                       |
+|                            |     "customer": {                                          |
+|                            |         "first_name": "Dorothy",                           |
+|                            |         "family_name": "Gale"                              |
+|                            |     },                                                     |
+|                            | }                                                          |
+| /Users/myuser/test.json    | {                                                          |
+|                            |     "foo": "bar",                                          |
+|                            |     "includes": [                                          |
+|                            |         "common.json"                                      |
+|                            |     ]                                                      |
+|                            | }                                                          |
++----------------------------+------------------------------------------------------------+
 ```
 
 or, you can query configurations of a particular file using:
@@ -72,39 +71,38 @@ where
 ```
 
 ```sh
-+---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-| path                            | file_content                                                                                                                 |
-+---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
-| /Users/myuser/json/invoice.json | {                                                                                                                            |
-|                                 |     "city": "East Centerville",                                                                                              |
-|                                 |     "date": "2012-08-06T00:00:00Z",                                                                                          |
-|                                 |     "items": [                                                                                                               |
-|                                 |         {                                                                                                                    |
-|                                 |             "price": 1.47,                                                                                                   |
-|                                 |             "part_no": "A4786",                                                                                              |
-|                                 |             "quantity": 4,                                                                                                   |
-|                                 |             "description": "Water Bucket (Filled)"                                                                           |
-|                                 |         },                                                                                                                   |
-|                                 |         {                                                                                                                    |
-|                                 |             "size": 8,                                                                                                       |
-|                                 |             "price": 133.7,                                                                                                  |
-|                                 |             "part_no": "E1628",                                                                                              |
-|                                 |             "quantity": 1,                                                                                                   |
-|                                 |             "description": "High Heeled \"Ruby\" Slippers"                                                                   |
-|                                 |         }                                                                                                                    |
-|                                 |     ],                                                                                                                       |
-|                                 |     "state": "KS",                                                                                                           |
-|                                 |     "street": "123 Tornado Alley\nSuite 16\n",                                                                               |
-|                                 |     "bill-to": null,                                                                                                         |
-|                                 |     "receipt": "Oz-Ware Purchase Invoice",                                                                                   |
-|                                 |     "ship-to": null,                                                                                                         |
-|                                 |     "customer": {                                                                                                            |
-|                                 |         "first_name": "Dorothy",                                                                                             |
-|                                 |         "family_name": "Gale"                                                                                                |
-|                                 |     },                                                                                                                       |
-|                                 |     "specialDelivery": "Follow the Yellow Brick Road to the Emerald City. Pay no attention to the man behind the curtain.\n" |
-|                                 | }                                                                                                                            |
-+---------------------------------+------------------------------------------------------------------------------------------------------------------------------+
++----------------------------+------------------------------------------------------------+
+| path                       | file_content                                               |
++----------------------------+------------------------------------------------------------+
+| /Users/myuser/invoice.json | {                                                          |
+|                            |     "city": "East Centerville",                            |
+|                            |     "date": "2012-08-06T00:00:00Z",                        |
+|                            |     "items": [                                             |
+|                            |         {                                                  |
+|                            |             "price": 1.47,                                 |
+|                            |             "part_no": "A4786",                            |
+|                            |             "quantity": 4,                                 |
+|                            |             "description": "Water Bucket (Filled)"         |
+|                            |         },                                                 |
+|                            |         {                                                  |
+|                            |             "size": 8,                                     |
+|                            |             "price": 133.7,                                |
+|                            |             "part_no": "E1628",                            |
+|                            |             "quantity": 1,                                 |
+|                            |             "description": "High Heeled \"Ruby\" Slippers" |
+|                            |         }                                                  |
+|                            |     ],                                                     |
+|                            |     "state": "KS",                                         |
+|                            |     "street": "123 Tornado Alley\nSuite 16\n",             |
+|                            |     "bill-to": null,                                       |
+|                            |     "receipt": "Oz-Ware Purchase Invoice",                 |
+|                            |     "ship-to": null,                                       |
+|                            |     "customer": {                                          |
+|                            |         "first_name": "Dorothy",                           |
+|                            |         "family_name": "Gale"                              |
+|                            |     },                                                     |
+|                            | }                                                          |
++----------------------------+------------------------------------------------------------+
 ```
 
 ## Examples
@@ -136,7 +134,6 @@ Given the file `invoice.json` with following configuration:
   ],
   "receipt": "Oz-Ware Purchase Invoice",
   "ship-to": null,
-  "specialDelivery": "Follow the Yellow Brick Road to the Emerald City. Pay no attention to the man behind the curtain.\n",
   "state": "KS",
   "street": "123 Tornado Alley\nSuite 16\n"
 }
