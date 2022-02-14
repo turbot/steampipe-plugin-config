@@ -2,7 +2,7 @@
 
 Query section and key-value pair data from INI files found in the configured `ini_paths`.
 
-For instance, if `ini_paths` is set to `[ "/Users/myuser/ini/*.ini" ]`, and that directory contains:
+For instance, if `ini_paths` is set to `[ "/Users/myuser/*.ini" ]`, and that directory contains:
 
 - defaults.ini
 - sample.ini
@@ -21,25 +21,23 @@ from
 ```
 
 ```sh
-+--------------------------------+-------------------------------+-------------------------------+---------------------------+-----------------------------+
-| path                           | section                       | key                           | value                     | comment                     |
-+--------------------------------+-------------------------------+-------------------------------+---------------------------+-----------------------------+
-| /Users/myuser/ini/defaults.ini | analytics                     | check_for_updates             | false                     |                             |
-| /Users/myuser/ini/defaults.ini | auth.google                   | client_secret                 | 0ldS3cretKey              |                             |
-| /Users/myuser/ini/defaults.ini | database                      | port                          | 8080                      |                             |
-| /Users/myuser/ini/defaults.ini | database                      | url                           | http://localhost:8080/    |                             |
-| /Users/myuser/ini/defaults.ini | DEFAULT                       | instance_name                 | my-instance               |                             |
-| /Users/myuser/ini/defaults.ini | plugin.grafana-image-renderer | rendering_ignore_https_errors | true                      |                             |
-| /Users/myuser/ini/defaults.ini | security                      | admin_user                    | admin                     |                             |
-| /Users/myuser/ini/sample.ini   | DEFAULT                       | app_mode                      | development               |                             |
-| /Users/myuser/ini/sample.ini   | paths                         | data                          | /home/git/grafana         |                             |
-| /Users/myuser/ini/sample.ini   | profile testing               | aws_access_key_id             | foo                       |                             |
-| /Users/myuser/ini/sample.ini   | profile testing               | aws_secret_access_key         | bar                       |                             |
-| /Users/myuser/ini/sample.ini   | server                        | enforce_domain                | true                      |                             |
-| /Users/myuser/ini/sample.ini   | server                        | host                          | http://localhost:9999/api | # Update after moving hosts |
-| /Users/myuser/ini/sample.ini   | server                        | http_port                     | 9999                      |                             |
-| /Users/myuser/ini/sample.ini   | server                        | protocol                      | http                      |                             |
-+--------------------------------+-------------------------------+-------------------------------+---------------------------+-----------------------------+
++----------------------------+-----------------+-----------------------+---------------------+---------------------+
+| path                       | section         | key                   | value               | comment             |
++----------------------------+-----------------+-----------------------+---------------------+---------------------+
+| /Users/myuser/defaults.ini | security        | admin_user            | admin               |                     |
+| /Users/myuser/defaults.ini | DEFAULT         | instance_name         | my-instance         | # default section   |
+| /Users/myuser/defaults.ini | auth.google     | client_secret         | 0ldS3cretKey        |                     |
+| /Users/myuser/defaults.ini | plugin.grafana. | ignore_https_errors   | true                |                     |
+| /Users/myuser/defaults.ini | analytics       | check_for_updates     | false               |                     |
+| /Users/myuser/sample.ini   | DEFAULT         | app_mode              | development         |                     |
+| /Users/myuser/sample.ini   | paths           | data                  | /home/git/grafana   |                     |
+| /Users/myuser/sample.ini   | profile testing | aws_access_key_id     | foo                 |                     |
+| /Users/myuser/sample.ini   | profile testing | aws_secret_access_key | bar                 |                     |
+| /Users/myuser/sample.ini   | server          | enforce_domain        | true                |                     |
+| /Users/myuser/sample.ini   | server          | host                  | http://localhost:99 | # Update host later |
+| /Users/myuser/sample.ini   | server          | http_port             | 9999                |                     |
+| /Users/myuser/sample.ini   | server          | protocol              | http                |                     |
++----------------------------+-----------------+-----------------------+---------------------+---------------------+
 ```
 
 or, you can query configurations of a particular file using:
@@ -53,21 +51,19 @@ select
 from
   ini_key_value
 where
-  path = '/Users/myuser/ini/defaults.ini';
+  path = '/Users/myuser/defaults.ini';
 ```
 
 ```sh
-+--------------------------------+-------------------------------+-------------------------------+---------------------------+---------+
-| path                           | section                       | key                           | value                     | comment |
-+--------------------------------+-------------------------------+-------------------------------+---------------------------+---------+
-| /Users/myuser/ini/defaults.ini | analytics                     | check_for_updates             | false                     |         |
-| /Users/myuser/ini/defaults.ini | auth.google                   | client_secret                 | 0ldS3cretKey              |         |
-| /Users/myuser/ini/defaults.ini | database                      | port                          | 8080                      |         |
-| /Users/myuser/ini/defaults.ini | database                      | url                           | http://localhost:8080/    |         |
-| /Users/myuser/ini/defaults.ini | DEFAULT                       | instance_name                 | my-instance               |         |
-| /Users/myuser/ini/defaults.ini | plugin.grafana-image-renderer | rendering_ignore_https_errors | true                      |         |
-| /Users/myuser/ini/defaults.ini | security                      | admin_user                    | admin                     |         |
-+--------------------------------+-------------------------------+-------------------------------+---------------------------+---------+
++----------------------------+----------------+---------------------+--------------+-------------------+
+| path                       | section        | key                 | value        | comment           |
++----------------------------+----------------+---------------------+--------------+-------------------+
+| /Users/myuser/defaults.ini | security       | admin_user          | admin        |                   |
+| /Users/myuser/defaults.ini | DEFAULT        | instance_name       | my-instance  | # default section |
+| /Users/myuser/defaults.ini | auth.google    | client_secret       | 0ldS3cretKey |                   |
+| /Users/myuser/defaults.ini | plugin.grafana | ignore_https_errors | true         |                   |
+| /Users/myuser/defaults.ini | analytics      | check_for_updates   | false        |                   |
++----------------------------+----------------+---------------------+--------------+-------------------+
 ```
 
 ## Examples
@@ -86,11 +82,10 @@ admin_user = admin
 [auth.google]
 client_secret = 0ldS3cretKey
 
-[plugin.grafana-image-renderer]
-rendering_ignore_https_errors = true
+[plugin.grafana]
+ignore_https_errors = true
 
 [analytics]
-# Set to false to disable all checks for new versions of installed plugins
 check_for_updates = false
 ```
 
@@ -104,32 +99,32 @@ select
 from
   ini_key_value
 where
-  path = '/Users/myuser/ini/defaults.ini';
+  path = '/Users/myuser/defaults.ini';
 ```
 
 ```sh
-+-------------------------------+-------------------------------+--------------+
-| section                       | key                           | value        |
-+-------------------------------+-------------------------------+--------------+
-| auth.google                   | client_secret                 | 0ldS3cretKey |
-| analytics                     | check_for_updates             | false        |
-| security                      | admin_user                    | admin        |
-| plugin.grafana-image-renderer | rendering_ignore_https_errors | true         |
-| DEFAULT                       | instance_name                 | my-instance  |
-+-------------------------------+-------------------------------+--------------+
++----------------+---------------------+--------------+
+| section        | key                 | value        |
++----------------+---------------------+--------------+
+| security       | admin_user          | admin        |
+| DEFAULT        | instance_name       | my-instance  |
+| auth.google    | client_secret       | 0ldS3cretKey |
+| plugin.grafana | ignore_https_errors | true         |
+| analytics      | check_for_updates   | false        |
++----------------+---------------------+--------------+
 ```
 
 or, you can check the value for a particular key:
 
 ```sql
-select,
+select
   section,
   key,
   value
 from
   ini_key_value
 where
-  path = '/Users/myuser/ini/defaults.ini'
+  path = '/Users/myuser/defaults.ini'
   and section = 'analytics'
   and key = 'check_for_updates';
 ```
@@ -154,7 +149,7 @@ select
 from
   ini_key_value
 where
-  path = '/Users/myuser/ini/defaults.ini'
+  path = '/Users/myuser/defaults.ini'
   and section = 'analytics'
   and key = 'check_for_updates'
   and not value::bool;
@@ -186,11 +181,11 @@ client_secret = 0ldS3cretKey
 port = 8080
 url = http://localhost:%(port)s/
 
-[plugin.grafana-image-renderer]
-rendering_ignore_https_errors = true
+[plugin.grafana]
+ignore_https_errors = true
 ```
 
-and the environment variable `HOSTNAME`:
+and the environment variable `HOSTNAME` is set:
 
 ```sh
 export HOSTNAME=my-instance
@@ -207,19 +202,19 @@ select
 from
   ini_key_value
 where
-  path = '/Users/myuser/ini/defaults.ini';
+  path = '/Users/myuser/defaults.ini';
 ```
 
 ```sh
-+-------------------------------+-------------------------------+------------------------+
-| section                       | key                           | value                  |
-+-------------------------------+-------------------------------+------------------------+
-| plugin.grafana-image-renderer | rendering_ignore_https_errors | true                   |
-| database                      | port                          | 8080                   |
-| DEFAULT                       | instance_name                 | my-instance            |
-| analytics                     | check_for_updates             | false                  |
-| auth.google                   | client_secret                 | 0ldS3cretKey           |
-| security                      | admin_user                    | admin                  |
-| database                      | url                           | http://localhost:8080/ |
-+-------------------------------+-------------------------------+------------------------+
++----------------+---------------------+------------------------+
+| section        | key                 | value                  |
++----------------+---------------------+------------------------+
+| plugin.grafana | ignore_https_errors | true                   |
+| database       | port                | 8080                   |
+| DEFAULT        | instance_name       | my-instance            |
+| analytics      | check_for_updates   | false                  |
+| auth.google    | client_secret       | 0ldS3cretKey           |
+| security       | admin_user          | admin                  |
+| database       | url                 | http://localhost:8080/ |
++----------------+---------------------+------------------------+
 ```
