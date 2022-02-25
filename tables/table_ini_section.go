@@ -3,8 +3,6 @@ package config
 import (
 	"context"
 	"fmt"
-	"path/filepath"
-	"strings"
 
 	"gopkg.in/ini.v1"
 
@@ -48,13 +46,10 @@ func listINISections(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 	// #2 - Path via glob paths in config
 	var paths []string
 	if d.KeyColumnQuals["path"] != nil {
-		ext := strings.ToLower(filepath.Ext(d.KeyColumnQuals["path"].GetStringValue()))
-		if ext == ".ini" {
-			paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
-		}
+		paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
 	} else {
 		var err error
-		paths, err = fileList(ctx, d.Connection, ".ini")
+		paths, err = listINIFiles(ctx, d.Connection)
 		if err != nil {
 			return nil, err
 		}
@@ -66,7 +61,7 @@ func listINISections(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 		cfg, err := ini.LoadSources(opts, path)
 		if err != nil {
 			plugin.Logger(ctx).Error("ini_section.listINISections", "file_error", err, "path", path)
-			return nil, fmt.Errorf("failed to read file: %v", err)
+			return nil, fmt.Errorf("failed to parse file %s: %v", path, err)
 		}
 
 		for _, i := range cfg.Sections() {

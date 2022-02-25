@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/turbot/steampipe-plugin-sdk/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/plugin"
@@ -47,13 +45,10 @@ func listJSONFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	// #2 - Path via glob paths in config
 	var paths []string
 	if d.KeyColumnQuals["path"] != nil {
-		ext := strings.ToLower(filepath.Ext(d.KeyColumnQuals["path"].GetStringValue()))
-		if ext == ".json" {
-			paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
-		}
+		paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
 	} else {
 		var err error
-		paths, err = fileList(ctx, d.Connection, ".json")
+		paths, err = listJSONFiles(ctx, d.Connection)
 		if err != nil {
 			return nil, err
 		}
@@ -63,7 +58,7 @@ func listJSONFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		jsonFile, err := os.Open(path)
 		if err != nil {
 			plugin.Logger(ctx).Error("json_file.listJSONFileWithPath", "file_error", err, "path", path)
-			return nil, fmt.Errorf("fail to read file: %v", err)
+			return nil, fmt.Errorf("fail to read file %s: %v", path, err)
 		}
 
 		// defer the closing of jsonFile so that we can parse it later on
@@ -75,9 +70,8 @@ func listJSONFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		err = json.Unmarshal([]byte(byteValue), &result)
 		if err != nil {
 			plugin.Logger(ctx).Error("json_file.listJSONFileWithPath", "parse_error", err, "path", path)
-			return nil, fmt.Errorf("failed to unmarshal data: %v", err)
+			return nil, fmt.Errorf("failed to unmarshal file content %s: %v", path, err)
 		}
-
 		d.StreamListItem(ctx, parseJSONContent{path, result})
 	}
 	return nil, nil
