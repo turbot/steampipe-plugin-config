@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -53,13 +52,10 @@ func listYMLKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 	// #2 - Path via glob paths in config
 	var paths []string
 	if d.KeyColumnQuals["path"] != nil {
-		ext := strings.ToLower(filepath.Ext(d.KeyColumnQuals["path"].GetStringValue()))
-		if ext == ".yml" || ext == ".yaml" {
-			paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
-		}
+		paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
 	} else {
 		var err error
-		paths, err = fileList(ctx, d.Connection, ".yml")
+		paths, err = listYMLFiles(ctx, d.Connection)
 		if err != nil {
 			return nil, err
 		}

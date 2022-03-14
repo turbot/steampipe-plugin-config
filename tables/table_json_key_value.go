@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 
 	"github.com/turbot/steampipe-plugin-sdk/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/plugin"
@@ -47,13 +45,10 @@ func listJSONKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 	// #2 - Path via glob paths in config
 	var paths []string
 	if d.KeyColumnQuals["path"] != nil {
-		ext := strings.ToLower(filepath.Ext(d.KeyColumnQuals["path"].GetStringValue()))
-		if ext == ".json" {
-			paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
-		}
+		paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
 	} else {
 		var err error
-		paths, err = fileList(ctx, d.Connection, ".json")
+		paths, err = listJSONFiles(ctx, d.Connection)
 		if err != nil {
 			return nil, err
 		}
