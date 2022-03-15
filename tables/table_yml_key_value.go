@@ -36,9 +36,9 @@ func tableYMLKeyValue(ctx context.Context) *plugin.Table {
 			{Name: "start_line", Type: proto.ColumnType_INT, Description: "Specifies the line number where the value is located."},
 			{Name: "start_column", Type: proto.ColumnType_INT, Description: "Specifies the starting column of the value."},
 			{Name: "pre_comments", Type: proto.ColumnType_JSON, Description: "Specifies the comments added above a key."},
-			{Name: "head_comment", Type: proto.ColumnType_STRING, Description: "Specifies the comments in the lines preceding the node and not separated by an empty line."},
-			{Name: "line_comment", Type: proto.ColumnType_STRING, Description: "Specifies the comments at the end of the line where the node is in."},
-			{Name: "foot_comment", Type: proto.ColumnType_STRING, Description: "Specifies the comments following the node and before empty lines."},
+			{Name: "head_comment", Type: proto.ColumnType_STRING, Description: "Specifies the comment in the lines preceding the node and not separated by an empty line."},
+			{Name: "line_comment", Type: proto.ColumnType_STRING, Description: "Specifies the comment at the end of the line where the node is in."},
+			{Name: "foot_comment", Type: proto.ColumnType_STRING, Description: "Specifies the comment following the node and before empty lines."},
 		},
 	}
 }
@@ -123,7 +123,7 @@ func treeToList(tree *yaml.Node, prefix []string, rows *Rows, preComments []stri
 			row := Row{
 				Key:         prefix,
 				Value:       []string{},
-				Tag:         tagToJSONType(tree.Tag),
+				Tag:         &tree.Tag,
 				StartLine:   tree.Line,
 				StartColumn: tree.Column,
 				PreComments: preComments,
@@ -163,7 +163,7 @@ func treeToList(tree *yaml.Node, prefix []string, rows *Rows, preComments []stri
 			row := Row{
 				Key:         prefix,
 				Value:       map[string]interface{}{},
-				Tag:         tagToJSONType(tree.Tag),
+				Tag:         &tree.Tag,
 				StartLine:   tree.Line,
 				StartColumn: tree.Column,
 				PreComments: preComments,
@@ -194,7 +194,7 @@ func treeToList(tree *yaml.Node, prefix []string, rows *Rows, preComments []stri
 		row := Row{
 			Key:         prefix,
 			Value:       tree.Value,
-			Tag:         tagToJSONType(tree.Tag),
+			Tag:         &tree.Tag,
 			StartLine:   tree.Line,
 			StartColumn: tree.Column,
 			PreComments: preComments,
@@ -217,21 +217,4 @@ func keysToSnakeCase(_ context.Context, d *transform.TransformData) (interface{}
 		snakes = append(snakes, re.ReplaceAllString(k, "_"))
 	}
 	return strings.Join(snakes, "."), nil
-}
-
-func tagToJSONType(tag string) *string {
-	dataType := "string"
-	switch tag {
-	case "!!str":
-		dataType = "string"
-	case "!!int":
-		dataType = "integer"
-	case "!!float":
-		dataType = "number"
-	case "!!null":
-		return nil
-	case "!!bool":
-		dataType = "boolean"
-	}
-	return &dataType
 }

@@ -7,7 +7,7 @@ For instance, if `paths` is set to `/Users/myuser/yml/*`, and that directory con
 - sample.yml
 - invoice.yml
 
-This table will retrieve all key-value pairs from each file mentioned above, along with comments and the line number, which you can then query directly:
+This table will retrieve all key-value pairs from each file mentioned above, along with comments and line numbers, which you can then query directly:
 
 ```sql
 select
@@ -21,31 +21,30 @@ from
 ```
 
 ```sh
-+----------------------+---------------------------------------------------------------------------------------------------+------------+-----------------------------+------------+
-| key_path             | value                                                                                             | value_type | pre_comments                | start_line |
-+----------------------+---------------------------------------------------------------------------------------------------+------------+-----------------------------+------------+
-| items.1.size         | 8                                                                                                 | integer    | []                          | 15         |
-| specialDelivery      | Follow the Yellow Brick Road to the Emerald City. Pay no attention to the man behind the curtain. | string     | []                          | 25         |
-| customer.family_name | Gale                                                                                              | string     | []                          | 6          |
-| items.1.part_no      | E1628                                                                                             | string     | []                          | 13         |
-| items.0.part_no      | A4786                                                                                             | string     | ["# List of ordered items"] | 9          |
-| items.0.price        | 1.47                                                                                              | number     | []                          | 11         |
-| date                 | 2012-08-06                                                                                        | string     | []                          | 3          |
-| items.1.price        | 133.7                                                                                             | number     | []                          | 16         |
-| customer.first_name  | Dorothy                                                                                           | string     | []                          | 5          |
-| includes.0           | common.yaml                                                                                       | string     | []                          | 3          |
-| foo                  | bar                                                                                               | string     | []                          | 4          |
-| items.1.description  | High Heeled "Ruby" Slippers                                                                       | string     | []                          | 14         |
-| receipt              | Oz-Ware Purchase Invoice                                                                          | string     | []                          | 2          |
-| items.0.quantity     | 4                                                                                                 | integer    | []                          | 12         |
-| items.0.description  | Water Bucket (Filled)                                                                             | string     | []                          | 10         |
-| city                 | East Centerville                                                                                  | string     | []                          | 22         |
-| items.1.quantity     | 1                                                                                                 | integer    | []                          | 17         |
-| state                | KS                                                                                                | string     | []                          | 23         |
-| bill_to              | <null>                                                                                            | null       | []                          | 18         |
-| street               | 123 Tornado Alley                                                                                 | string     | []                          | 19         |
-|                      | Suite 16                                                                                          |            |                             |            |
-+----------------------+---------------------------------------------------------------------------------------------------+------------+-----------------------------+------------+
++----------------------+-----------------------------+------------+-----------------------------+------------+
+| key_path             | value                       | value_type | pre_comments                | start_line |
++----------------------+-----------------------------+------------+-----------------------------+------------+
+| items.1.size         | 8                           | !!int      | []                          | 15         |
+| customer.family_name | Gale                        | !!str      | []                          | 6          |
+| items.1.part_no      | E1628                       | !!str      | []                          | 13         |
+| items.0.part_no      | A4786                       | !!str      | ["# List of ordered items"] | 9          |
+| items.0.price        | 1.47                        | !!float    | []                          | 11         |
+| date                 | 2012-08-06                  | !!str      | []                          | 3          |
+| items.1.price        | 133.7                       | !!float    | []                          | 16         |
+| customer.first_name  | Dorothy                     | !!str      | []                          | 5          |
+| includes.0           | common.yaml                 | !!str      | []                          | 3          |
+| foo                  | bar                         | !!str      | []                          | 4          |
+| items.1.description  | High Heeled "Ruby" Slippers | !!str      | []                          | 14         |
+| receipt              | Oz-Ware Purchase Invoice    | !!str      | []                          | 2          |
+| items.0.quantity     | 4                           | !!int      | []                          | 12         |
+| items.0.description  | Water Bucket (Filled)       | !!str      | []                          | 10         |
+| city                 | East Centerville            | !!str      | []                          | 22         |
+| items.1.quantity     | 1                           | !!int      | []                          | 17         |
+| state                | KS                          | !!str      | []                          | 23         |
+| bill_to              | <null>                      | !!null     | []                          | 18         |
+| street               | 123 Tornado Alley           | !!str      | []                          | 19         |
+|                      | Suite 16                    |            |                             |            |
++----------------------+-----------------------------+------------+-----------------------------+------------+
 ```
 
 or, you can query configurations of a particular file using:
@@ -65,7 +64,56 @@ where
 
 ## Examples
 
-### Query a simple file
+This table uses column `key_path` of type [ltree](https://www.postgresql.org/docs/9.1/ltree.html), contains a sequence of zero or more labels separated by dots representing a path from the root of a hierarchical tree to a particular node.
+
+The [ltree](https://www.postgresql.org/docs/9.1/ltree.html) is a Postgres extension for representing and querying data stored in a hierarchical tree-like structure, which enables powerful search functionality that can be used to model, query and validate hierarchical and arbitrarily nested data structures.
+
+### Searching key paths
+
+For example, from the sample YML file above, you can query all `part_no` subkeys using the `~` operator to match an lquery,
+
+```sql
+select
+  value as part_no
+from
+  json_key_value
+where
+  path = '/Users/myuser/yml/invoice.yml'
+  and key_path ~ 'items.*.part_no';
+```
+
+```sh
++---------+
+| part_no |
++---------+
+| E1628   |
+| A4786   |
++---------+
+```
+
+## List descendants of a specific node
+
+```sql
+select
+  key_path,
+  value
+from
+  json_key_value
+where
+  path = '/Users/myuser/yml/invoice.yml'
+  and key_path <@ 'customer';
+```
+
+```sh
++----------------------+---------+
+| key_path             | value   |
++----------------------+---------+
+| customer.first_name  | Dorothy |
+| customer.family_name | Gale    |
++----------------------+---------+
+```
+
+### Create a pivot table and search for specific key
 
 Given the file `invoice.yml` with following configuration:
 
@@ -94,11 +142,6 @@ street: |
 city: East Centerville
 state: KS
 ship-to: *id001
-specialDelivery: >
-  Follow the Yellow Brick
-  Road to the Emerald City.
-  Pay no attention to the
-  man behind the curtain.
 ```
 
 and the query is:
@@ -191,52 +234,4 @@ from
   items
 group by
   item;
-```
-
-### Searching key paths
-
-The `Ltree` implements a materialized path, which is pretty quick for `SELECT` operations. This table uses `key_path` column of type `ltree` to represent the path in a hierarchical tree-like structure.
-
-For example, from above mentioned sample JSON file,
-you can easily query all the `part_no` using path match,
-
-```sql
-select
-  value as part_no
-from
-  json_key_value
-where
-  path = '/Users/myuser/yml/invoice.yml'
-  and key_path ~ 'items.*.part_no';
-```
-
-```sh
-+---------+
-| part_no |
-+---------+
-| E1628   |
-| A4786   |
-+---------+
-```
-
-or, you can fetch all details provided inside `customer` node,
-
-```sql
-select
-  key_path,
-  value
-from
-  json_key_value
-where
-  path = '/Users/myuser/yml/invoice.yml'
-  and key_path <@ 'customer';
-```
-
-```sh
-+----------------------+---------+
-| key_path             | value   |
-+----------------------+---------+
-| customer.first_name  | Dorothy |
-| customer.family_name | Gale    |
-+----------------------+---------+
 ```

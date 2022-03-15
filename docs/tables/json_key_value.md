@@ -7,43 +7,41 @@ For instance, if `paths` is set to `/Users/myuser/json/*`, and that directory co
 - sample.json
 - invoice.json
 
-This table will retrieve all key-value pairs from each file mentioned above, along with the line number, which you can then query directly:
+This table will retrieve all key-value pairs from each file mentioned above, along with line numbers, which you can then query directly:
 
 ```sql
 select
   key_path,
   value,
-  tag as value_type,
   start_line
 from
   json_key_value;
 ```
 
 ```sh
-+----------------------+---------------------------------------------------------------------------------------------------+------------+------------+
-| key_path             | value                                                                                             | value_type | start_line |
-+----------------------+---------------------------------------------------------------------------------------------------+------------+------------+
-| items.1.part_no      | E1628                                                                                             | string     | 19         |
-| customer.first_name  | Dorothy                                                                                           | string     | 6          |
-| city                 | East Centerville                                                                                  | string     | 3          |
-| items.1.size         | 8                                                                                                 | integer    | 22         |
-| specialDelivery      | Follow the Yellow Brick Road to the Emerald City. Pay no attention to the man behind the curtain. | string     | 26         |
-|                      |                                                                                                   |            |            |
-| items.1.price        | 133.7                                                                                             | number     | 20         |
-| items.1.quantity     | 1                                                                                                 | integer    | 21         |
-| street               | 123 Tornado Alley                                                                                 | string     | 28         |
-|                      | Suite 16                                                                                          |            |            |
-|                      |                                                                                                   |            |            |
-| state                | KS                                                                                                | string     | 27         |
-| items.0.description  | Water Bucket (Filled)                                                                             | string     | 12         |
-| items.0.price        | 1.47                                                                                              | number     | 14         |
-| date                 | 2012-08-06T00:00:00Z                                                                              | string     | 9          |
-| items.0.part_no      | A4786                                                                                             | string     | 13         |
-| items.1.description  | High Heeled "Ruby" Slippers                                                                       | string     | 18         |
-| customer.family_name | Gale                                                                                              | string     | 5          |
-| receipt              | Oz-Ware Purchase Invoice                                                                          | string     | 25         |
-| items.0.quantity     | 4                                                                                                 | integer    | 15         |
-+----------------------+---------------------------------------------------------------------------------------------------+------------+------------+
++----------------------+-----------------------------+------------+
+| key_path             | value                       | start_line |
++----------------------+-----------------------------+------------+
+| items.1.part_no      | E1628                       | 19         |
+| customer.first_name  | Dorothy                     | 6          |
+| city                 | East Centerville            | 3          |
+| items.1.size         | 8                           | 22         |
+|                      |                             |            |
+| items.1.price        | 133.7                       | 20         |
+| items.1.quantity     | 1                           | 21         |
+| street               | 123 Tornado Alley           | 28         |
+|                      | Suite 16                    |            |
+|                      |                             |            |
+| state                | KS                          | 27         |
+| items.0.description  | Water Bucket (Filled)       | 12         |
+| items.0.price        | 1.47                        | 14         |
+| date                 | 2012-08-06T00:00:00Z        | 9          |
+| items.0.part_no      | A4786                       | 13         |
+| items.1.description  | High Heeled "Ruby" Slippers | 18         |
+| customer.family_name | Gale                        | 5          |
+| receipt              | Oz-Ware Purchase Invoice    | 25         |
+| items.0.quantity     | 4                           | 15         |
++----------------------+-----------------------------+------------+
 ```
 
 or, you can query configurations of a particular file using:
@@ -52,7 +50,6 @@ or, you can query configurations of a particular file using:
 select
   key_path,
   value,
-  tag as value_type,
   start_line
 from
   json_key_value
@@ -62,7 +59,56 @@ where
 
 ## Examples
 
-### Query a simple file
+This table uses column `key_path` of type [ltree](https://www.postgresql.org/docs/9.1/ltree.html), contains a sequence of zero or more labels separated by dots representing a path from the root of a hierarchical tree to a particular node.
+
+The [ltree](https://www.postgresql.org/docs/9.1/ltree.html) is a Postgres extension for representing and querying data stored in a hierarchical tree-like structure, which enables powerful search functionality that can be used to model, query and validate hierarchical and arbitrarily nested data structures.
+
+### Searching key paths
+
+For example, from the sample JSON file above, you can query all `part_no` subkeys using the `~` operator to match an lquery,
+
+```sql
+select
+  value as part_no
+from
+  json_key_value
+where
+  path = '/Users/myuser/json/invoice.json'
+  and key_path ~ 'items.*.part_no';
+```
+
+```sh
++---------+
+| part_no |
++---------+
+| E1628   |
+| A4786   |
++---------+
+```
+
+## List descendants of a specific node
+
+```sql
+select
+  key_path,
+  value
+from
+  json_key_value
+where
+  path = '/Users/myuser/json/invoice.json'
+  and key_path <@ 'customer';
+```
+
+```sh
++----------------------+---------+
+| key_path             | value   |
++----------------------+---------+
+| customer.first_name  | Dorothy |
+| customer.family_name | Gale    |
++----------------------+---------+
+```
+
+### Create a pivot table and search for specific key
 
 Given the file `invoice.json` with following configuration:
 
@@ -89,7 +135,6 @@ Given the file `invoice.json` with following configuration:
   ],
   "receipt": "Oz-Ware Purchase Invoice",
   "ship-to": null,
-  "specialDelivery": "Follow the Yellow Brick Road to the Emerald City. Pay no attention to the man behind the curtain.\n",
   "state": "KS",
   "street": "123 Tornado Alley\nSuite 16\n"
 }
@@ -185,52 +230,4 @@ from
   items
 group by
   item;
-```
-
-### Searching key paths
-
-The `Ltree` implements a materialized path, which is pretty quick for `SELECT` operations. This table uses `key_path` column of type `ltree` to represent the path in a hierarchical tree-like structure.
-
-For example, from above mentioned sample JSON file,
-you can easily query all the `part_no` using path match,
-
-```sql
-select
-  value as part_no
-from
-  json_key_value
-where
-  path = '/Users/myuser/json/invoice.json'
-  and key_path ~ 'items.*.part_no';
-```
-
-```sh
-+---------+
-| part_no |
-+---------+
-| E1628   |
-| A4786   |
-+---------+
-```
-
-or, you can fetch all details provided inside `customer` node,
-
-```sql
-select
-  key_path,
-  value
-from
-  json_key_value
-where
-  path = '/Users/myuser/json/invoice.json'
-  and key_path <@ 'customer';
-```
-
-```sh
-+----------------------+---------+
-| key_path             | value   |
-+----------------------+---------+
-| customer.first_name  | Dorothy |
-| customer.family_name | Gale    |
-+----------------------+---------+
 ```
