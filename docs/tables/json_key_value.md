@@ -50,25 +50,86 @@ or, you can query configurations of a particular file using:
 select
   key_path,
   value,
-  start_line
+  path
 from
   json_key_value
 where
   path = '/Users/myuser/json/invoice.json';
 ```
 
+```sh
++----------------------+-----------------------------+---------------------------------+
+| key_path             | value                       | path                            |
++----------------------+-----------------------------+---------------------------------+
+| items.1.size         | 8                           | /Users/myuser/json/invoice.json |
+| customer.family_name | Gale                        | /Users/myuser/json/invoice.json |
+| items.1.part_no      | E1628                       | /Users/myuser/json/invoice.json |
+| items.0.part_no      | A4786                       | /Users/myuser/json/invoice.json |
+| items.0.price        | 1.47                        | /Users/myuser/json/invoice.json |
+| date                 | 2012-08-06                  | /Users/myuser/json/invoice.json |
+| items.1.price        | 133.7                       | /Users/myuser/json/invoice.json |
+| customer.first_name  | Dorothy                     | /Users/myuser/json/invoice.json |
+| includes.0           | common.yaml                 | /Users/myuser/json/invoice.json |
+| foo                  | bar                         | /Users/myuser/json/invoice.json |
+| items.1.description  | High Heeled "Ruby" Slippers | /Users/myuser/json/invoice.json |
+| receipt              | Oz-Ware Purchase Invoice    | /Users/myuser/json/invoice.json |
+| items.0.quantity     | 4                           | /Users/myuser/json/invoice.json |
+| items.0.description  | Water Bucket (Filled)       | /Users/myuser/json/invoice.json |
+| city                 | East Centerville            | /Users/myuser/json/invoice.json |
+| items.1.quantity     | 1                           | /Users/myuser/json/invoice.json |
++----------------------+-----------------------------+---------------------------------+
+```
+
 ## Examples
 
-This table uses column `key_path` of type [ltree](https://www.postgresql.org/docs/9.1/ltree.html), contains a sequence of zero or more labels separated by dots representing a path from the root of a hierarchical tree to a particular node.
+This table uses column `key_path` of type [ltree](https://www.postgresql.org/docs/12/ltree.html), contains a sequence of zero or more labels separated by dots representing a path from the root of a hierarchical tree to a particular node,  , which enables powerful search functionality that can be used to model, query and validate hierarchical and arbitrarily nested data structures, enables powerful search functionality that can be used to model, query and validate hierarchical and arbitrarily nested data structures.
 
-The [ltree](https://www.postgresql.org/docs/9.1/ltree.html) is a Postgres extension for representing and querying data stored in a hierarchical tree-like structure, which enables powerful search functionality that can be used to model, query and validate hierarchical and arbitrarily nested data structures.
+### Search value of a particular key
 
-### Searching key paths
+```sql
+select
+  key_path,
+  value as part_no
+from
+  json_key_value
+where
+  path = '/Users/myuser/json/invoice.json'
+  and key_path = 'items.0.part_no';
+```
+
+or, you can query all subkeys that have index less than `items`,
+
+```sql
+select
+  key_path,
+  value as part_no
+from
+  json_key_value
+where
+  path = '/Users/myuser/json/invoice.json'
+  and key_path < 'items';
+```
+
+```sh
++----------------------+----------------------+
+| key_path             | value                |
++----------------------+----------------------+
+| checks.0             | foo                  |
+| checks.1             | timon                |
+| city                 | East Centerville     |
+| customer.family_name | Gale                 |
+| customer.first_name  | Dorothy              |
+| date                 | 2012-08-06T00:00:00Z |
++----------------------+----------------------+
+```
+
+### Search values using path matching
 
 For example, from the sample JSON file above, you can query all `part_no` subkeys using the `~` operator to match an lquery,
 
 ```sql
 select
+  key_path,
   value as part_no
 from
   json_key_value
@@ -78,15 +139,15 @@ where
 ```
 
 ```sh
-+---------+
-| part_no |
-+---------+
-| E1628   |
-| A4786   |
-+---------+
++-----------------+---------+
+| key_path        | part_no |
++-----------------+---------+
+| items.1.part_no | E1628   |
+| items.0.part_no | A4786   |
++-----------------+---------+
 ```
 
-## List descendants of a specific node
+### List descendants of a specific node
 
 ```sql
 select
