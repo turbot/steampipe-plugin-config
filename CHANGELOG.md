@@ -1,3 +1,15 @@
+## v0.0.3 [2022-03-17]
+
+_What's new?_
+
+- New tables added
+  - [json_key_value](https://hub.steampipe.io/plugins/turbot/config/tables/json_key_value) ([#12](https://github.com/turbot/steampipe-plugin-config/pull/12))
+  - [yml_key_value](https://hub.steampipe.io/plugins/turbot/config/tables/yml_key_value) ([#12](https://github.com/turbot/steampipe-plugin-config/pull/12))
+
+_Enhancements_
+
+- Recompiled plugin with [steampipe-plugin-sdk v3.0.1](https://github.com/turbot/steampipe-plugin-sdk/blob/main/CHANGELOG.md#v301-2022-03-10) ([#12](https://github.com/turbot/steampipe-plugin-config/pull/12))
+
 ## v0.0.2 [2022-02-14]
 
 _Enhancements_
