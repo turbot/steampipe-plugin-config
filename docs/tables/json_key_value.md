@@ -1,8 +1,8 @@
 # Table: json_key_value
 
-Query key-value pair data along with comments and line number from JSON files found in the configured `paths`.
+Query key-value pairs and line numbers from JSON files found in the configured `json_paths`.
 
-For instance, if `paths` is set to `/Users/myuser/json/*`, and that directory contains:
+For instance, if `json_paths` is set to `[ "/Users/myuser/*.json" ]`, and that directory contains:
 
 - sample.json
 - invoice.json
@@ -26,12 +26,10 @@ from
 | customer.first_name  | Dorothy                     | 6          |
 | city                 | East Centerville            | 3          |
 | items.1.size         | 8                           | 22         |
-|                      |                             |            |
 | items.1.price        | 133.7                       | 20         |
 | items.1.quantity     | 1                           | 21         |
 | street               | 123 Tornado Alley           | 28         |
 |                      | Suite 16                    |            |
-|                      |                             |            |
 | state                | KS                          | 27         |
 | items.0.description  | Water Bucket (Filled)       | 12         |
 | items.0.price        | 1.47                        | 14         |
@@ -82,9 +80,45 @@ where
 
 ## Examples
 
-This table uses column `key_path` of type [ltree](https://www.postgresql.org/docs/12/ltree.html), contains a sequence of zero or more labels separated by dots representing a path from the root of a hierarchical tree to a particular node,  , which enables powerful search functionality that can be used to model, query and validate hierarchical and arbitrarily nested data structures, enables powerful search functionality that can be used to model, query and validate hierarchical and arbitrarily nested data structures.
+The `key_path` column's data type is
+[ltree](https://www.postgresql.org/docs/12/ltree.html), so all `key_path`
+values are stored as dot-delimited label paths. This enables the use of the
+usual comparison operators along with `ltree` operators and functions which can
+be used to match subpaths, find ancestors and descendants, and search arrays.
 
-### Search value of a particular key
+For all examples below, assume we're using the file `invoice.json` with the following configuration:
+
+```json
+{
+  "bill-to": null,
+  "city": "East Centerville",
+  "customer": { "family_name": "Gale", "first_name": "Dorothy" },
+  "date": "2012-08-06T00:00:00Z",
+  "items": [
+    {
+      "description": "Water Bucket (Filled)",
+      "part_no": "A4786",
+      "price": 1.47,
+      "quantity": 4
+    },
+    {
+      "description": "High Heeled \"Ruby\" Slippers",
+      "part_no": "E1628",
+      "price": 133.7,
+      "quantity": 1,
+      "size": 8
+    }
+  ],
+  "receipt": "Oz-Ware Purchase Invoice",
+  "ship-to": null,
+  "state": "KS",
+  "street": "123 Tornado Alley\nSuite 16\n"
+}
+```
+
+### Query a specific key-value pair
+
+You can query a specific key path to get its value:
 
 ```sql
 select
@@ -97,7 +131,19 @@ where
   and key_path = 'items.0.part_no';
 ```
 
-or, you can query all subkeys that have index less than `items`,
+```sh
++-----------------+-------+
+| key_path        | value |
++-----------------+-------+
+| items.0.part_no | A4786 |
++-----------------+-------+
+```
+
+### Query using comparison operators
+
+The usual comparison operators, like `<`, `>`, `<=`, and `>=` work with `ltree` columns.
+
+For instance, you can use the `<` operator to query all key paths that are before `items` alphabetically:
 
 ```sql
 select
@@ -112,10 +158,9 @@ where
 
 ```sh
 +----------------------+----------------------+
-| key_path             | value                |
+| key_path             | part_no              |
 +----------------------+----------------------+
-| checks.0             | foo                  |
-| checks.1             | timon                |
+| bill_to              | <null>               |
 | city                 | East Centerville     |
 | customer.family_name | Gale                 |
 | customer.first_name  | Dorothy              |
@@ -123,9 +168,9 @@ where
 +----------------------+----------------------+
 ```
 
-### Search values using path matching
+### Query using path matching
 
-For example, from the sample JSON file above, you can query all `part_no` subkeys using the `~` operator to match an lquery,
+`ltree` also supports additional operators like `~` which can be used to find all `part_no` subkeys:
 
 ```sql
 select
@@ -169,39 +214,7 @@ where
 +----------------------+---------+
 ```
 
-### Create a pivot table and search for specific key
-
-Given the file `invoice.json` with following configuration:
-
-```json
-{
-  "bill-to": null,
-  "city": "East Centerville",
-  "customer": { "family_name": "Gale", "first_name": "Dorothy" },
-  "date": "2012-08-06T00:00:00Z",
-  "items": [
-    {
-      "description": "Water Bucket (Filled)",
-      "part_no": "A4786",
-      "price": 1.47,
-      "quantity": 4
-    },
-    {
-      "description": "High Heeled \"Ruby\" Slippers",
-      "part_no": "E1628",
-      "price": 133.7,
-      "quantity": 1,
-      "size": 8
-    }
-  ],
-  "receipt": "Oz-Ware Purchase Invoice",
-  "ship-to": null,
-  "state": "KS",
-  "street": "123 Tornado Alley\nSuite 16\n"
-}
-```
-
-and the query is:
+### Create a pivot table and search for a specific key
 
 ```sql
 with items as (
@@ -236,7 +249,7 @@ group by
 +---------+-----------------------------+--------+----------+-------+
 ```
 
-or, you can check the value for a particular key:
+You can also check the value for a particular key:
 
 ```sql
 with items as (
@@ -265,9 +278,17 @@ group by
 select * from pivot_tables where part_no = 'E1628';
 ```
 
+```sh
++---------+-----------------------------+--------+----------+-------+
+| part_no | item_name                   | size   | quantity | price |
++---------+-----------------------------+--------+----------+-------+
+| E1628   | High Heeled "Ruby" Slippers | 8      | 1        | 133.7 |
++---------+-----------------------------+--------+----------+-------+
+```
+
 ### Casting column data for analysis
 
-Text columns can be easily cast to other types:
+The `value` column data type is `text`, so you can easily cast it when required:
 
 ```sql
 with items as (
@@ -291,4 +312,13 @@ from
   items
 group by
   item;
+```
+
+```sh
++---------+-----------------------------+--------+----------+-------+
+| part_no | item_name                   | size   | quantity | price |
++---------+-----------------------------+--------+----------+-------+
+| A4786   | Water Bucket (Filled)       | <null> | 4        | 1.47  |
+| E1628   | High Heeled "Ruby" Slippers | 8      | 1        | 133.7 |
++---------+-----------------------------+--------+----------+-------+
 ```

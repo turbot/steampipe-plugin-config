@@ -1,8 +1,8 @@
 # Table: yml_key_value
 
-Query key-value pair data along with comments and line number from YML files found in the configured `paths`.
+Query key-value pairs, comments, and line numbers from YML files found in the configured `yml_paths`.
 
-For instance, if `paths` is set to `/Users/myuser/yml/*`, and that directory contains:
+For instance, if `yml_paths` is set to `[ "/Users/myuser/*.yml", "/Users/myuser/*.yaml" ]`, and that directory contains:
 
 - sample.yml
 - invoice.yml
@@ -85,9 +85,44 @@ where
 
 ## Examples
 
-This table uses column `key_path` of type [ltree](https://www.postgresql.org/docs/12/ltree.html), contains a sequence of zero or more labels separated by dots representing a path from the root of a hierarchical tree to a particular node,  , which enables powerful search functionality that can be used to model, query and validate hierarchical and arbitrarily nested data structures, enables powerful search functionality that can be used to model, query and validate hierarchical and arbitrarily nested data structures.
+The `key_path` column's data type is
+[ltree](https://www.postgresql.org/docs/12/ltree.html), so all `key_path`
+values are stored as dot-delimited label paths. This enables the use of the
+usual comparison operators along with `ltree` operators and functions which can
+be used to match subpaths, find ancestors and descendants, and search arrays.
 
-### Search value of a particular key
+For all examples below, assume we're using the file `invoice.yml` with the following configuration:
+
+```yml
+---
+receipt: Oz-Ware Purchase Invoice
+date: 2012-08-06
+customer:
+    first_name:  Dorothy
+    family_name: Gale
+# List of ordered items
+items:
+  - part_no: A4786 # item 1
+    description: Water Bucket (Filled)
+    price: 1.47
+    quantity: 4
+  - part_no: E1628 # item 2
+    description: High Heeled "Ruby" Slippers
+    size: 8
+    price: 133.7
+    quantity: 1
+bill-to: &id001
+street: |
+  123 Tornado Alley
+  Suite 16
+city: East Centerville
+state: KS
+ship-to: *id001
+```
+
+### Query a specific key-value pair
+
+You can query a specific key path to get its value:
 
 ```sql
 select
@@ -100,7 +135,19 @@ where
   and key_path = 'items.0.part_no';
 ```
 
-or, you can query all subkeys that have index less than `items`,
+```sh
++-----------------+-------+
+| key_path        | value |
++-----------------+-------+
+| items.0.part_no | A4786 |
++-----------------+-------+
+```
+
+### Query using comparison operators
+
+The usual comparison operators, like `<`, `>`, `<=`, and `>=` work with `ltree` columns.
+
+For instance, you can use the `<` operator to query all key paths that are before `items` alphabetically:
 
 ```sql
 select
@@ -115,10 +162,9 @@ where
 
 ```sh
 +----------------------+----------------------+
-| key_path             | value                |
+| key_path             | part_no              |
 +----------------------+----------------------+
-| checks.0             | foo                  |
-| checks.1             | timon                |
+| bill_to              | <null>               |
 | city                 | East Centerville     |
 | customer.family_name | Gale                 |
 | customer.first_name  | Dorothy              |
@@ -126,9 +172,9 @@ where
 +----------------------+----------------------+
 ```
 
-### Search values using path matching
+### Query using path matching
 
-For example, from the sample YML file above, you can query all `part_no` subkeys using the `~` operator to match an lquery,
+`ltree` also supports additional operators like `~` which can be used to find all `part_no` subkeys:
 
 ```sql
 select
@@ -172,38 +218,7 @@ where
 +----------------------+---------+
 ```
 
-### Create a pivot table and search for specific key
-
-Given the file `invoice.yml` with following configuration:
-
-```yml
----
-receipt: Oz-Ware Purchase Invoice
-date: 2012-08-06
-customer:
-    first_name:  Dorothy
-    family_name: Gale
-# List of ordered items
-items:
-  - part_no: A4786 # item 1
-    description: Water Bucket (Filled)
-    price: 1.47
-    quantity: 4
-  - part_no: E1628 # item 2
-    description: High Heeled "Ruby" Slippers
-    size: 8
-    price: 133.7
-    quantity: 1
-bill-to: &id001
-street: |
-  123 Tornado Alley
-  Suite 16
-city: East Centerville
-state: KS
-ship-to: *id001
-```
-
-and the query is:
+### Create a pivot table and search for a specific key
 
 ```sql
 with items as (
@@ -238,7 +253,7 @@ group by
 +---------+-----------------------------+--------+----------+-------+
 ```
 
-or, you can check the value for a particular key:
+You can also check the value for a particular key:
 
 ```sql
 with items as (
@@ -267,9 +282,17 @@ group by
 select * from pivot_tables where part_no = 'E1628';
 ```
 
+```sh
++---------+-----------------------------+--------+----------+-------+
+| part_no | item_name                   | size   | quantity | price |
++---------+-----------------------------+--------+----------+-------+
+| E1628   | High Heeled "Ruby" Slippers | 8      | 1        | 133.7 |
++---------+-----------------------------+--------+----------+-------+
+```
+
 ### Casting column data for analysis
 
-Text columns can be easily cast to other types:
+The `value` column data type is `text`, so you can easily cast it when required:
 
 ```sql
 with items as (
@@ -293,4 +316,13 @@ from
   items
 group by
   item;
+```
+
+```sh
++---------+-----------------------------+--------+----------+-------+
+| part_no | item_name                   | size   | quantity | price |
++---------+-----------------------------+--------+----------+-------+
+| A4786   | Water Bucket (Filled)       | <null> | 4        | 1.47  |
+| E1628   | High Heeled "Ruby" Slippers | 8      | 1        | 133.7 |
++---------+-----------------------------+--------+----------+-------+
 ```

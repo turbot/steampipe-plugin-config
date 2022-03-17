@@ -109,7 +109,7 @@ where
 
 ### Query a simple file
 
-Given the file `invoice.yml` with following configuration:
+Given the file `invoice.yml` with the following configuration:
 
 ```yaml
 ---
