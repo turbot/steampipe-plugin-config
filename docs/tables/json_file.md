@@ -109,7 +109,7 @@ where
 
 ### Query a simple file
 
-Given the file `invoice.json` with following configuration:
+Given the file `invoice.json` with the following configuration:
 
 ```json
 {
