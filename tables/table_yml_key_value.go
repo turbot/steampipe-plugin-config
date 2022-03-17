@@ -79,7 +79,7 @@ func listYMLKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 		}
 
 		var rows Rows
-		treeToList(&root, []string{}, &rows, nil)
+		treeToList(&root, []string{}, &rows, nil, nil, nil)
 		for _, r := range rows {
 			r.Path = path
 			d.StreamListItem(ctx, r)
@@ -102,21 +102,27 @@ type Row struct {
 	StartColumn int
 }
 
-func treeToList(tree *yaml.Node, prefix []string, rows *Rows, preComments []string) {
+func treeToList(tree *yaml.Node, prefix []string, rows *Rows, preComments []string, headComments []string, footComments []string) {
 	switch tree.Kind {
 	case yaml.DocumentNode:
 		for i, v := range tree.Content {
 			localComments := []string{}
+			headComments = []string{}
+			footComments = []string{}
 			if i == 0 {
 				localComments = append(localComments, preComments...)
 				if tree.HeadComment != "" {
 					localComments = append(localComments, tree.HeadComment)
+					headComments = append(headComments, tree.HeadComment)
+				}
+				if tree.FootComment != "" {
+					footComments = append(footComments, tree.FootComment)
 				}
 				if tree.LineComment != "" {
 					localComments = append(localComments, tree.LineComment)
 				}
 			}
-			treeToList(v, prefix, rows, localComments)
+			treeToList(v, prefix, rows, localComments, headComments, footComments)
 		}
 	case yaml.SequenceNode:
 		if len(tree.Content) == 0 {
@@ -127,19 +133,22 @@ func treeToList(tree *yaml.Node, prefix []string, rows *Rows, preComments []stri
 				StartLine:   tree.Line,
 				StartColumn: tree.Column,
 				PreComments: preComments,
-				HeadComment: tree.HeadComment,
+				HeadComment: strings.Join(headComments, ","),
 				LineComment: tree.LineComment,
-				FootComment: tree.FootComment,
+				FootComment: strings.Join(footComments, ","),
 			}
 			*rows = append(*rows, row)
 		}
 
 		for i, v := range tree.Content {
 			localComments := []string{}
+			headComments = []string{}
+			footComments = []string{}
 			if i == 0 {
 				localComments = append(localComments, preComments...)
 				if tree.HeadComment != "" {
 					localComments = append(localComments, tree.HeadComment)
+					headComments = append(headComments, tree.HeadComment)
 				}
 				if tree.LineComment != "" {
 					localComments = append(localComments, tree.LineComment)
@@ -148,13 +157,19 @@ func treeToList(tree *yaml.Node, prefix []string, rows *Rows, preComments []stri
 			newKey := make([]string, len(prefix))
 			copy(newKey, prefix)
 			newKey = append(newKey, strconv.Itoa(i))
-			treeToList(v, newKey, rows, localComments)
+			treeToList(v, newKey, rows, localComments, headComments, footComments)
 		}
 	case yaml.MappingNode:
 		localComments := []string{}
+		headComments = []string{}
+		footComments = []string{}
 		localComments = append(localComments, preComments...)
 		if tree.HeadComment != "" {
 			localComments = append(localComments, tree.HeadComment)
+			headComments = append(headComments, tree.HeadComment)
+		}
+		if tree.FootComment != "" {
+			footComments = append(footComments, tree.FootComment)
 		}
 		if tree.LineComment != "" {
 			localComments = append(localComments, tree.LineComment)
@@ -167,9 +182,9 @@ func treeToList(tree *yaml.Node, prefix []string, rows *Rows, preComments []stri
 				StartLine:   tree.Line,
 				StartColumn: tree.Column,
 				PreComments: preComments,
-				HeadComment: tree.HeadComment,
+				HeadComment: strings.Join(headComments, ","),
 				LineComment: tree.LineComment,
-				FootComment: tree.FootComment,
+				FootComment: strings.Join(footComments, ","),
 			}
 			*rows = append(*rows, row)
 		}
@@ -180,6 +195,10 @@ func treeToList(tree *yaml.Node, prefix []string, rows *Rows, preComments []stri
 			i = i + 2
 			if key.HeadComment != "" {
 				localComments = append(localComments, key.HeadComment)
+				headComments = append(headComments, key.HeadComment)
+			}
+			if key.FootComment != "" {
+				footComments = append(footComments, key.FootComment)
 			}
 			if key.LineComment != "" {
 				localComments = append(localComments, key.LineComment)
@@ -187,8 +206,10 @@ func treeToList(tree *yaml.Node, prefix []string, rows *Rows, preComments []stri
 			newKey := make([]string, len(prefix))
 			copy(newKey, prefix)
 			newKey = append(newKey, key.Value)
-			treeToList(val, newKey, rows, localComments)
+			treeToList(val, newKey, rows, localComments, headComments, footComments)
 			localComments = make([]string, 0)
+			headComments = make([]string, 0)
+			footComments = make([]string, 0)
 		}
 	case yaml.ScalarNode:
 		row := Row{
@@ -198,9 +219,9 @@ func treeToList(tree *yaml.Node, prefix []string, rows *Rows, preComments []stri
 			StartLine:   tree.Line,
 			StartColumn: tree.Column,
 			PreComments: preComments,
-			HeadComment: tree.HeadComment,
+			HeadComment: strings.Join(headComments, ","),
 			LineComment: tree.LineComment,
-			FootComment: tree.FootComment,
+			FootComment: strings.Join(footComments, ","),
 		}
 		if tree.Tag == "!!null" {
 			row.Value = nil

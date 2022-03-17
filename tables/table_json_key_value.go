@@ -71,7 +71,7 @@ func listJSONKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 		}
 
 		var rows Rows
-		treeToList(&root, []string{}, &rows, nil)
+		treeToList(&root, []string{}, &rows, nil, nil, nil)
 		for _, r := range rows {
 			r.Path = path
 			d.StreamListItem(ctx, r)
