@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/bmatcuk/doublestar v1.3.4
-	github.com/turbot/steampipe-plugin-sdk/v3 v3.3.1
+	github.com/turbot/steampipe-plugin-sdk/v3 v3.3.2
 	gopkg.in/ini.v1 v1.66.3
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
