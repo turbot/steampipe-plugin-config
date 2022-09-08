@@ -3,10 +3,10 @@ package config
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 
-	"github.com/turbot/steampipe-plugin-sdk/v3/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v3/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
 	"gopkg.in/yaml.v3"
 )
 
@@ -55,7 +55,7 @@ func listYMLFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 
 	for _, path := range paths {
 		// Read file
-		content, err := ioutil.ReadFile(path)
+		content, err := os.ReadFile(path)
 		if err != nil {
 			plugin.Logger(ctx).Error("yml_file.listYMLFileWithPath", "file_error", err, "path", path)
 			return nil, fmt.Errorf("failed to read file %s: %v", path, err)
