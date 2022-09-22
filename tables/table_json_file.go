@@ -7,8 +7,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/turbot/steampipe-plugin-sdk/v3/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v3/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
 func tableJSONFile(ctx context.Context) *plugin.Table {
@@ -44,8 +44,8 @@ func listJSONFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 	//
 	// #2 - Path via glob paths in config
 	var paths []string
-	if d.KeyColumnQuals["path"] != nil {
-		paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
+	if d.EqualsQuals["path"] != nil {
+		paths = []string{d.EqualsQuals["path"].GetStringValue()}
 	} else {
 		var err error
 		paths, err = listJSONFiles(ctx, d.Connection)
