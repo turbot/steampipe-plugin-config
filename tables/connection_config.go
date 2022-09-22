@@ -6,9 +6,9 @@ import (
 )
 
 type parseConfig struct {
-	INIPaths  []string `cty:"ini_paths"`
-	JSONPaths []string `cty:"json_paths"`
-	YMLPaths  []string `cty:"yml_paths"`
+	INIPaths  []string `cty:"ini_paths" steampipe:"watch"`
+	JSONPaths []string `cty:"json_paths" steampipe:"watch"`
+	YMLPaths  []string `cty:"yml_paths" steampipe:"watch"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{

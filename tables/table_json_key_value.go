@@ -47,7 +47,7 @@ func listJSONKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrat
 		paths = []string{d.EqualsQuals["path"].GetStringValue()}
 	} else {
 		var err error
-		paths, err = listJSONFiles(ctx, d.Connection)
+		paths, err = listJSONFiles(ctx, d)
 		if err != nil {
 			return nil, err
 		}

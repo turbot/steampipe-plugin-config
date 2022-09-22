@@ -49,7 +49,7 @@ func listINISections(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 		paths = []string{d.EqualsQuals["path"].GetStringValue()}
 	} else {
 		var err error
-		paths, err = listINIFiles(ctx, d.Connection)
+		paths, err = listINIFiles(ctx, d)
 		if err != nil {
 			return nil, err
 		}

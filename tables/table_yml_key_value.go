@@ -55,7 +55,7 @@ func listYMLKeyValue(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 		paths = []string{d.EqualsQuals["path"].GetStringValue()}
 	} else {
 		var err error
-		paths, err = listYMLFiles(ctx, d.Connection)
+		paths, err = listYMLFiles(ctx, d)
 		if err != nil {
 			return nil, err
 		}
