@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
@@ -64,7 +64,7 @@ func listJSONFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		// defer the closing of jsonFile so that we can parse it later on
 		defer jsonFile.Close()
 
-		byteValue, _ := ioutil.ReadAll(jsonFile)
+		byteValue, _ := io.ReadAll(jsonFile)
 
 		var result map[string]interface{}
 		err = json.Unmarshal([]byte(byteValue), &result)
