@@ -2,7 +2,7 @@
 
 _Enhancements_
 
-- Added support for loading JSON files containing arrays to `json_file` table. ([#25](https://github.com/turbot/steampipe-plugin-config/pull/25))
+- Added support for loading JSON files containing arrays to `json_file` table. ([#25](https://github.com/turbot/steampipe-plugin-config/pull/25)) (Thanks to [@keilin-anz](https://github.com/keilin-anz) for the contribution!)
 
 _Dependencies_
 
