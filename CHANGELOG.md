@@ -1,3 +1,14 @@
+## v0.2.0 [2022-09-26]
+
+_Enhancements_
+
+- Added support for loading JSON files containing arrays to `json_file` table. ([#25](https://github.com/turbot/steampipe-plugin-config/pull/25))
+
+_Dependencies_
+
+- Recompiled plugin with [steampipe-plugin-sdk v4.1.7](https://github.com/turbot/steampipe-plugin-sdk/blob/main/CHANGELOG.md#v417-2022-09-08) which includes several caching and memory management improvements. ([#26](https://github.com/turbot/steampipe-plugin-config/pull/26))
+- Recompiled plugin with Go version `1.19`. ([#26](https://github.com/turbot/steampipe-plugin-config/pull/26))
+
 ## v0.1.0 [2022-04-27]
 
 _Enhancements_
