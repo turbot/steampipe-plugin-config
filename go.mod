@@ -3,7 +3,6 @@ module github.com/turbot/steampipe-plugin-config
 go 1.19
 
 require (
-	github.com/bmatcuk/doublestar v1.3.4
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.0.0-dev.8
 	gopkg.in/ini.v1 v1.66.3
 	gopkg.in/yaml.v3 v3.0.1

@@ -17,6 +17,7 @@ Config plugin is used to parse various types of configuration files, e.g., `INI`
 [Steampipe](https://steampipe.io) is an open source CLI to instantly query data using SQL.
 
 The following file types are currently supported:
+
 - INI
 - JSON
 - YML
@@ -180,18 +181,6 @@ connection "config" {
   # All paths are resolved relative to the current working directory (CWD)
   # Wildcard based searches are supported, including recursive searches.
 
-  # For example, for the json_paths argument:
-  #  - "*.json" matches all JSON files in the CWD
-  #  - "**/*.json" matches all JSON files in a directory, and all the sub-directories in it
-  #  - "../*.json" matches all JSON files in in the CWD's parent directory
-  #  - "steampipe*.json" matches all JSON files starting with "steampipe" in the CWD
-  #  - "/path/to/dir/*.json" matches all JSON files in a specific directory
-  #  - "/path/to/dir/main.json" matches a specific file
-
-  # If any paths include "*", all files (including non-required files) in
-  # the CWD will be matched and will attempt to be loaded as that
-  # particular file type
-
   # All paths arguments default to CWD
   ini_paths  = [ "*.ini" ]
   json_paths = [ "*.json" ]
@@ -203,7 +192,42 @@ connection "config" {
 - `json_paths` - A list of directory paths to search for JSON files.
 - `yml_paths` - A list of directory paths to search for YML files.
 
-All `paths` arguments are resolved relative to the current working directory. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match) and also supports `**` for recursive matching. Each `paths` argument defaults to the current working directory.
+### Setting up paths
+
+The arguments `ini_paths`, `json_paths` and `yml_paths` in the config are a list of directory paths, a GitHub repository URL, or a S3 URL to search for INI, JSON and YML files respectively. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match) and also support `**` for recursive matching. Defaults to the current working directory.
+
+#### Configuring local file paths
+
+You can define a list of local directory paths to search for INI, JSON and YML files. Paths are resolved relative to the current working directory. For example, for the `json_paths` argument:
+
+- `*.json` matches all JSON files in the CWD.
+- `**/*.json` matches all JSON files in the CWD and all sub-directories.
+- `../*.json` matches all JSON files in the CWD's parent directory.
+- `steampipe*.json` matches all JSON files starting with `steampipe` in the CWD.
+- `/path/to/dir/*.json` matches all JSON files in a specific directory. For example:
+  - `~/*.json` matches all JSON files in the home directory.
+  - `~/**/*.json` matches all JSON files recursively in the home directory.
+- `/path/to/dir/main.json` matches a specific file.
+
+**NOTE:** If paths includes `*`, all files (including non-required files) in the CWD will be matched, which may cause errors if incompatible file types exist.
+
+#### Configuring GitHub URLs
+
+You can define a list of URL as input to search for INI, JSON and YML files from a variety of protocols. For example:
+
+- `github.com/LearnWebCode/json-example//*.json` matches all top-level JSON files in the specified github repository.
+- `github.com/LearnWebCode/json-example//**/*.json` matches all JSON files in the specified github repository and all sub-directories.
+- `github.com/turbot/polygoat?ref=fix_7677//**/*.json` matches all JSON files in the specific tag of github repository.
+
+If you want to download only a specific subdirectory from a downloaded directory, you can specify a subdirectory after a double-slash (`//`).
+
+- `github.com/brandiqa/json-examples//api/config//*.json` matches all JSON files in the specific folder of a github repository.
+
+#### Configuring S3 URLs
+
+You can also pass a S3 bucket URL to search for INI, JSON and YML files stored in the specified S3 bucket. For example:
+
+- `s3::https://s3.amazonaws.com/bucket/json_examples//**/*.json` matches all the JSON files recursively.
 
 ## Get involved
 
