@@ -66,7 +66,8 @@ func listJSONFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 
 		byteValue, _ := io.ReadAll(jsonFile)
 
-		var result map[string]interface{}
+		// Load either JSON objects or JSON arrays
+		var result interface{}
 		err = json.Unmarshal([]byte(byteValue), &result)
 		if err != nil {
 			plugin.Logger(ctx).Error("json_file.listJSONFileWithPath", "parse_error", err, "path", path)
