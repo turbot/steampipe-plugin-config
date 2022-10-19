@@ -194,7 +194,19 @@ connection "config" {
 
 ### Setting up paths
 
-The arguments `ini_paths`, `json_paths` and `yml_paths` in the config are a list of directory paths, a GitHub repository URL, or a S3 URL to search for INI, JSON and YML files respectively. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match) and also support `**` for recursive matching. Defaults to the current working directory.
+The arguments `ini_paths`, `json_paths` and `yml_paths` in the config are a list of directory paths, a GitHub repository URL, or a S3 URL to search for INI, JSON and YML files respectively. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match) and also support `**` for recursive matching. Defaults to the current working directory. For example:
+
+```hcl
+connection "config" {
+  plugin = "config"
+
+  ini_paths = [ "*.ini", "~/*.ini", "github.com/madmurphy/libconfini//examples/ini_files//l*.ini", "git::https://github.com/madmurphy/libconfini.git//examples/ini_files//l*.ini", "s3::https://bucket.s3.amazonaws.com/config_examples//**/*.ini" ]
+
+  json_paths = [ "*.json", "~/*.json", "github.com/LearnWebCode/json-example//*.json",  "git::https://github.com/LearnWebCode/json-example.git//*.json", "s3::https://bucket.s3.amazonaws.com/config_examples//**/*.json" ]
+
+  yml_paths  = [ "*.yml", "~/*.yaml", "github.com/awslabs/aws-cloudformation-templates//aws/services/ElasticLoadBalancing//*.yaml", "git::https://github.com/awslabs/aws-cloudformation-templates.git//aws/services/ElasticLoadBalancing//*.yaml", "s3::https://bucket.s3.amazonaws.com/config_examples//**/*.yaml" ]
+}
+```
 
 #### Configuring local file paths
 
@@ -209,6 +221,16 @@ You can define a list of local directory paths to search for INI, JSON and YML f
   - `~/**/*.json` matches all JSON files recursively in the home directory.
 - `/path/to/dir/main.json` matches a specific file.
 
+```hcl
+connection "config" {
+  plugin = "config"
+
+  ini_paths  = [ "*.ini", "~/*.ini", "/path/to/dir/main.ini" ]
+  json_paths = [ "*.json", "~/*.json", "/path/to/dir/main.json" ]
+  yml_paths  = [ "*.yml", "~/*.yaml", "/path/to/dir/main.yml" ]
+}
+```
+
 **NOTE:** If paths includes `*`, all files (including non-required files) in the CWD will be matched, which may cause errors if incompatible file types exist.
 
 #### Configuring GitHub URLs
@@ -218,16 +240,35 @@ You can define a list of URL as input to search for INI, JSON and YML files from
 - `github.com/LearnWebCode/json-example//*.json` matches all top-level JSON files in the specified github repository.
 - `github.com/LearnWebCode/json-example//**/*.json` matches all JSON files in the specified github repository and all sub-directories.
 - `github.com/turbot/polygoat?ref=fix_7677//**/*.json` matches all JSON files in the specific tag of github repository.
+- `git::https://github.com/awslabs/aws-cloudformation-templates.git//aws/services/ElasticLoadBalancing//*.yaml` matches all YAML files in the given HTTP URL using the Git protocol.
 
 If you want to download only a specific subdirectory from a downloaded directory, you can specify a subdirectory after a double-slash (`//`).
 
 - `github.com/brandiqa/json-examples//api/config//*.json` matches all JSON files in the specific folder of a github repository.
+
+```hcl
+connection "config" {
+  plugin = "config"
+
+  ini_paths  = [ "github.com/madmurphy/libconfini//examples/ini_files//l*.ini", "git::https://github.com/madmurphy/libconfini.git//examples/ini_files//l*.ini" ]
+  json_paths = [ "github.com/LearnWebCode/json-example//*.json", "git::https://github.com/LearnWebCode/json-example.git//*.json" ]
+  yml_paths  = [ "github.com/awslabs/aws-cloudformation-templates//aws/services/ElasticLoadBalancing//*.yaml", "git::https://github.com/awslabs/aws-cloudformation-templates.git//aws/services/ElasticLoadBalancing//*.yaml" ]
+}
+```
 
 #### Configuring S3 URLs
 
 You can also pass a S3 bucket URL to search for INI, JSON and YML files stored in the specified S3 bucket. For example:
 
 - `s3::https://s3.amazonaws.com/bucket/json_examples//**/*.json` matches all the JSON files recursively.
+
+```hcl
+connection "config" {
+  plugin = "config"
+
+  ini_paths  = [ "s3::https://bucket.s3.amazonaws.com/config_examples//**/*.json" ]
+}
+```
 
 ## Get involved
 
