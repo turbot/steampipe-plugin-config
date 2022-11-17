@@ -193,7 +193,7 @@ connection "config" {
   # If paths includes "*", all files (including non-required files) in
   # the CWD will be matched, which may cause errors if incompatible file types exist
 
-  # All paths arguments defaults to CWD
+  # All paths arguments default to CWD
   ini_paths  = [ "*.ini" ]
   json_paths = [ "*.json" ]
   yml_paths  = [ "*.yml", "*.yaml" ]
