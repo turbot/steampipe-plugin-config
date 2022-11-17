@@ -1,14 +1,14 @@
 package config
 
 import (
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/schema"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/schema"
 )
 
 type parseConfig struct {
-	INIPaths  []string `cty:"ini_paths"`
-	JSONPaths []string `cty:"json_paths"`
-	YMLPaths  []string `cty:"yml_paths"`
+	INIPaths  []string `cty:"ini_paths" steampipe:"watch"`
+	JSONPaths []string `cty:"json_paths" steampipe:"watch"`
+	YMLPaths  []string `cty:"yml_paths" steampipe:"watch"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{

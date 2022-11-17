@@ -9,8 +9,8 @@ import (
 
 	"gopkg.in/ini.v1"
 
-	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
 func tableINIKeyValue(ctx context.Context) *plugin.Table {
@@ -52,11 +52,11 @@ func listINIWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hydrate
 	//
 	// #2 - Path via glob paths in config
 	var paths []string
-	if d.KeyColumnQuals["path"] != nil {
-		paths = []string{d.KeyColumnQuals["path"].GetStringValue()}
+	if d.EqualsQuals["path"] != nil {
+		paths = []string{d.EqualsQuals["path"].GetStringValue()}
 	} else {
 		var err error
-		paths, err = listINIFiles(ctx, d.Connection)
+		paths, err = listINIFiles(ctx, d)
 		if err != nil {
 			return nil, err
 		}
