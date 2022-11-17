@@ -178,39 +178,81 @@ connection "config" {
   plugin = "config"
 
   # Each paths argument is a list of locations to search for a particular file type
-  # All paths are resolved relative to the current working directory (CWD)
-  # Wildcard based searches are supported, including recursive searches.
+  # Each paths can be configured with a local directory, a remote Git repository URL, or an S3 bucket URL
+  # Wildcard based searches are supported, including recursive searches
+  # Local paths are resolved relative to the current working directory (CWD)
 
-  # All paths arguments default to CWD
+  # For example, for the json_paths argument:
+  #  - "*.json" matches all JSON files in the CWD
+  #  - "**/*.json" matches all JSON files in a directory, and all the sub-directories in it
+  #  - "../*.json" matches all JSON files in in the CWD's parent directory
+  #  - "steampipe*.json" matches all JSON files starting with "steampipe" in the CWD
+  #  - "/path/to/dir/*.json" matches all JSON files in a specific directory
+  #  - "/path/to/dir/main.json" matches a specific file
+
+  # If paths includes "*", all files (including non-required files) in
+  # the CWD will be matched, which may cause errors if incompatible file types exist
+
+  # All paths arguments defaults to CWD
   ini_paths  = [ "*.ini" ]
   json_paths = [ "*.json" ]
   yml_paths  = [ "*.yml", "*.yaml" ]
 }
 ```
 
-- `ini_paths` - A list of directory paths to search for INI files.
-- `json_paths` - A list of directory paths to search for JSON files.
-- `yml_paths` - A list of directory paths to search for YML files.
+### Supported Path Formats
 
-### Setting up paths
+The `ini_paths`, `json_paths` and `yml_paths` config arguments are flexible and can search for INI, JSON and YML files from several different sources respectively, e.g., local directory paths, Git, S3.
 
-The arguments `ini_paths`, `json_paths` and `yml_paths` in the config are a list of directory paths, a GitHub repository URL, or a S3 URL to search for INI, JSON and YML files respectively. Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match) and also support `**` for recursive matching. Defaults to the current working directory. For example:
+The following sources are supported:
+
+- [Local files](#configuring-local-file-paths)
+- [Remote Git repositories](#configuring-remote-git-repository-urls)
+- [S3](#configuring-s3-urls)
+
+Paths may [include wildcards](https://pkg.go.dev/path/filepath#Match) and support `**` for recursive matching. For example:
 
 ```hcl
 connection "config" {
   plugin = "config"
 
-  ini_paths = [ "*.ini", "~/*.ini", "github.com/madmurphy/libconfini//examples/ini_files//l*.ini", "git::https://github.com/madmurphy/libconfini.git//examples/ini_files//l*.ini", "s3::https://bucket.s3.amazonaws.com/config_examples//**/*.ini" ]
+  ini_paths = [
+    "*.ini",
+    "~/*.ini",
+    "github.com/madmurphy/libconfini//examples/ini_files//l*.ini",
+    "github.com/madmurphy/libconfini//examples/ini_files//**/*.ini",
+    "bitbucket.org/feeeper/ini-examples//**/*.ini",
+    "s3::https://bucket.s3.amazonaws.com/config_examples//**/*.ini"
+  ]
 
-  json_paths = [ "*.json", "~/*.json", "github.com/LearnWebCode/json-example//*.json",  "git::https://github.com/LearnWebCode/json-example.git//*.json", "s3::https://bucket.s3.amazonaws.com/config_examples//**/*.json" ]
+  json_paths = [
+    "*.json",
+    "~/*.json",
+    "github.com/LearnWebCode/json-example//*.json",
+    "github.com/LearnWebCode/json-example//**/*.json",
+    "bitbucket.org/atlassian/json-schema-diff//**/*.json",
+    "s3::https://bucket.s3.amazonaws.com/config_examples//**/*.json"
+  ]
 
-  yml_paths  = [ "*.yml", "~/*.yaml", "github.com/awslabs/aws-cloudformation-templates//aws/services/ElasticLoadBalancing//*.yaml", "git::https://github.com/awslabs/aws-cloudformation-templates.git//aws/services/ElasticLoadBalancing//*.yaml", "s3::https://bucket.s3.amazonaws.com/config_examples//**/*.yaml" ]
+  yml_paths  = [
+    "*.yml",
+    "~/*.yaml",
+    "github.com/awslabs/aws-cloudformation-templates//aws/services/ElasticLoadBalancing//*.yaml",
+    "github.com/awslabs/aws-cloudformation-templates//**/*.yaml",
+    "bitbucket.org/lokerd/yaml-formation//**/*.yml",
+    "gitlab.com/versioncontrol1/cloudformationproject//substacks//*.yaml",
+    "s3::https://bucket.s3.amazonaws.com/config_examples//**/*.yaml"
+  ]
 }
 ```
 
-#### Configuring local file paths
+**Note**: If any path matches on `*` without the expected file extension (e.g. `.ini`, `.json`, `.yaml`, `.yml`), all files (including non-required files) in the directory will be matched, which may cause errors if incompatible file types exist.
 
-You can define a list of local directory paths to search for INI, JSON and YML files. Paths are resolved relative to the current working directory. For example, for the `json_paths` argument:
+#### Configuring Local File Paths
+
+You can define a list of local directory paths to search for INI, JSON and YML files. Paths are resolved relative to the current working directory.
+
+For example, for the `json_paths` argument:
 
 - `*.json` matches all JSON files in the CWD.
 - `**/*.json` matches all JSON files in the CWD and all sub-directories.
@@ -233,40 +275,124 @@ connection "config" {
 
 **NOTE:** If paths includes `*`, all files (including non-required files) in the CWD will be matched, which may cause errors if incompatible file types exist.
 
-#### Configuring GitHub URLs
+#### Configuring Remote Git Repository URLs
 
-You can define a list of URL as input to search for INI, JSON and YML files from a variety of protocols. For example:
+You can also configure `ini_paths`, `json_paths` and `yml_paths` with any Git remote repository URLs, e.g., GitHub, BitBucket, GitLab. The plugin will then attempt to retrieve any INI, JSON and YML files from the remote repositories.
+
+For example:
 
 - `github.com/LearnWebCode/json-example//*.json` matches all top-level JSON files in the specified github repository.
 - `github.com/LearnWebCode/json-example//**/*.json` matches all JSON files in the specified github repository and all sub-directories.
 - `github.com/turbot/polygoat?ref=fix_7677//**/*.json` matches all JSON files in the specific tag of github repository.
-- `git::https://github.com/awslabs/aws-cloudformation-templates.git//aws/services/ElasticLoadBalancing//*.yaml` matches all YAML files in the given HTTP URL using the Git protocol.
+- `github.com/brandiqa/json-examples//api/config//*.json` matches all JSON files in the specified folder path.
 
-If you want to download only a specific subdirectory from a downloaded directory, you can specify a subdirectory after a double-slash (`//`).
-
-- `github.com/brandiqa/json-examples//api/config//*.json` matches all JSON files in the specific folder of a github repository.
+You can specify a subdirectory after a double-slash (`//`) if you want to download only a specific subdirectory from a downloaded directory.
 
 ```hcl
 connection "config" {
   plugin = "config"
 
-  ini_paths  = [ "github.com/madmurphy/libconfini//examples/ini_files//l*.ini", "git::https://github.com/madmurphy/libconfini.git//examples/ini_files//l*.ini" ]
-  json_paths = [ "github.com/LearnWebCode/json-example//*.json", "git::https://github.com/LearnWebCode/json-example.git//*.json" ]
-  yml_paths  = [ "github.com/awslabs/aws-cloudformation-templates//aws/services/ElasticLoadBalancing//*.yaml", "git::https://github.com/awslabs/aws-cloudformation-templates.git//aws/services/ElasticLoadBalancing//*.yaml" ]
+  paths = [ "github.com/brandiqa/json-examples//api/config//*.json" ]
+}
+```
+
+Similarly, you can define a list of GitLab and BitBucket URLs to search for INI, JSON and YML files:
+
+```hcl
+connection "config" {
+  plugin = "config"
+
+  ini_paths  = [
+    "github.com/madmurphy/libconfini//examples/ini_files//l*.ini",
+    "github.com/madmurphy/libconfini//**/*.ini",
+    "bitbucket.org/feeeper/ini-examples//**/*.ini",
+    "bitbucket.org/feeeper/ini-examples//*.ini"
+  ]
+
+  json_paths = [
+    "github.com/LearnWebCode/json-example//*.json",
+    "github.com/brandiqa/json-examples//api/config//*.json",
+    "bitbucket.org/atlassian/json-schema-diff//**/*.json",
+    "bitbucket.org/atlassian/json-schema-diff//*.json"
+  ]
+
+  yml_paths  = [
+    "github.com/awslabs/aws-cloudformation-templates//aws/services/ElasticLoadBalancing//*.yaml",
+    "github.com/awslabs/aws-cloudformation-templates//aws/services//**/*.yaml",
+    "bitbucket.org/lokerd/yaml-formation//**/*.yml",
+    "bitbucket.org/lokerd/yaml-formation//examples/convert/Parameters//*.yml",
+    "gitlab.com/versioncontrol1/cloudformationproject//**/*.yaml",
+    "gitlab.com/versioncontrol1/cloudformationproject//substacks//*.yaml"
+  ]
 }
 ```
 
 #### Configuring S3 URLs
 
-You can also pass a S3 bucket URL to search for INI, JSON and YML files stored in the specified S3 bucket. For example:
+You can also query all INI, JSON and YML files stored inside an S3 bucket (public or private) using the bucket URL.
 
-- `s3::https://s3.amazonaws.com/bucket/json_examples//**/*.json` matches all the JSON files recursively.
+##### Accessing a Private Bucket
+
+In order to access your files in a private S3 bucket, you will need to configure your credentials. You can use your configured AWS profile from local `~/.aws/config`, or pass the credentials using the standard AWS environment variables, e.g., `AWS_PROFILE`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`.
+
+We recommend using AWS profiles for authentication.
+
+**Note:** Make sure that `region` is configured in the config. If not set in the config, `region` will be fetched from the standard environment variable `AWS_REGION`.
+
+You can also authenticate your request by setting the AWS profile and region in the respective path argument. For example:
 
 ```hcl
 connection "config" {
   plugin = "config"
 
-  ini_paths  = [ "s3::https://bucket.s3.amazonaws.com/config_examples//**/*.json" ]
+  paths = [
+    "s3::https://bucket-2.s3.us-east-1.amazonaws.com//*.json?aws_profile=<AWS_PROFILE>",
+    "s3::https://bucket-2.s3.us-east-1.amazonaws.com/test_folder//*.json?aws_profile=<AWS_PROFILE>"
+  ]
+}
+```
+
+**Note:**
+
+In order to access the bucket, the IAM user or role will require the following IAM permissions:
+
+- `s3:ListBucket`
+- `s3:GetObject`
+- `s3:GetObjectVersion`
+
+If the bucket is in another AWS account, the bucket policy will need to grant access to your user or role. For example:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadBucketObject",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::123456789012:user/YOUR_USER"
+      },
+      "Action": ["s3:ListBucket", "s3:GetObject", "s3:GetObjectVersion"],
+      "Resource": ["arn:aws:s3:::test-bucket1", "arn:aws:s3:::test-bucket1/*"]
+    }
+  ]
+}
+```
+
+##### Accessing a Public Bucket
+
+Public access granted to buckets and objects through ACLs and bucket policies allows any user access to data in the bucket. We do not recommend making S3 buckets public, but if there are specific objects you'd like to make public, please see [How can I grant public read access to some objects in my Amazon S3 bucket?](https://aws.amazon.com/premiumsupport/knowledge-center/read-access-objects-s3-bucket/).
+
+You can query any public S3 bucket directly using the URL without passing credentials. For example:
+
+```hcl
+connection "config" {
+  plugin = "config"
+
+  paths = [
+    "s3::https://bucket-1.s3.us-east-1.amazonaws.com/test_folder//*.json",
+    "s3::https://bucket-2.s3.us-east-1.amazonaws.com/test_folder//**/*.json"
+  ]
 }
 ```
 
