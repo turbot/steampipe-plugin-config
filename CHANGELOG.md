@@ -1,3 +1,14 @@
+## v0.3.0 [2022-11-17]
+
+_What's new?_
+
+- Added support for retrieving INI, JSON and YML config files from remote Git repositories and S3 buckets. For more information, please see [Supported Path Formats](https://hub.steampipe.io/plugins/turbot/config#supported-path-formats). ([#27](https://github.com/turbot/steampipe-plugin-config/pull/27))
+- Added file watching support for files included in the `paths` config argument. ([#27](https://github.com/turbot/steampipe-plugin-config/pull/27))
+
+_Dependencies_
+
+- Recompiled plugin with [steampipe-plugin-sdk v5.0.0](https://github.com/turbot/steampipe-plugin-sdk/blob/main/CHANGELOG.md#v500-2022-11-16) which includes support for fetching remote files with go-getter and file watching. ([#27](https://github.com/turbot/steampipe-plugin-config/pull/27))
+
 ## v0.2.0 [2022-09-26]
 
 _Enhancements_
