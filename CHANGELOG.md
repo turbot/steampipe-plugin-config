@@ -1,3 +1,9 @@
+## v0.3.1 [2023-02-28]
+
+_Bug fixes_
+
+- Fixed the incorrect dynamic plugin schema definition that would cause 100% CPU during initialization. ([#34](https://github.com/turbot/steampipe-plugin-config/pull/34))
+
 ## v0.3.0 [2022-11-17]
 
 _What's new?_
