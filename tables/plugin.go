@@ -15,7 +15,6 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			Schema:      ConfigSchema,
 		},
 		DefaultTransform: transform.FromCamel().NullIfZero(),
-		SchemaMode:       plugin.SchemaModeDynamic,
 		TableMap: map[string]*plugin.Table{
 			"ini_key_value":  tableINIKeyValue(ctx),
 			"ini_section":    tableINISection(ctx),
