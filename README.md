@@ -6,7 +6,7 @@ Use SQL to query data from various types of configuration files, e.g. `INI`, `JS
 
 - **[Get started →](https://hub.steampipe.io/plugins/turbot/config)**
 - Documentation: [Table definitions & examples](https://hub.steampipe.io/plugins/turbot/config/tables)
-- Community: [Slack Channel](https://steampipe.io/community/join)
+- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)
 - Get involved: [Issues](https://github.com/turbot/steampipe-plugin-config/issues)
 
 ## Quick start
