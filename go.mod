@@ -3,7 +3,7 @@ module github.com/turbot/steampipe-plugin-config
 go 1.21
 
 require (
-	github.com/turbot/steampipe-plugin-sdk/v5 v5.6.0
+	github.com/turbot/steampipe-plugin-sdk/v5 v5.6.1
 	gopkg.in/ini.v1 v1.66.3
 	gopkg.in/yaml.v3 v3.0.1
 )
