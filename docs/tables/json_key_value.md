@@ -1,82 +1,15 @@
-# Table: json_key_value
+---
+title: "Steampipe Table: json_key_value - Query OCI Config JSON Key Value using SQL"
+description: "Allows users to query JSON Key Values in OCI Config, specifically the JSON key-value pairs, providing insights into configuration data and potential anomalies."
+---
 
-Query key-value pairs and line numbers from JSON files found in the configured `json_paths`.
+# Table: json_key_value - Query OCI Config JSON Key Values using SQL
 
-For instance, if `json_paths` is set to `[ "/Users/myuser/*.json" ]`, and that directory contains:
+The JSON Key Value is a resource within Oracle Cloud Infrastructure (OCI) Config that allows you to monitor and manage your JSON key-value pairs across your applications and infrastructure. It provides a centralized way to set up and manage key-value pairs for various OCI resources, including virtual machines, databases, web applications, and more. OCI Config JSON Key Value helps you stay informed about the health and performance of your OCI resources and take appropriate actions when predefined conditions are met.
 
-- sample.json
-- invoice.json
+## Table Usage Guide
 
-This table will retrieve all key-value pairs from each file mentioned above, along with line numbers, which you can then query directly:
-
-```sql
-select
-  key_path,
-  value,
-  start_line
-from
-  json_key_value;
-```
-
-```sh
-+----------------------+-----------------------------+------------+
-| key_path             | value                       | start_line |
-+----------------------+-----------------------------+------------+
-| items.1.part_no      | E1628                       | 19         |
-| customer.first_name  | Dorothy                     | 6          |
-| city                 | East Centerville            | 3          |
-| items.1.size         | 8                           | 22         |
-| items.1.price        | 133.7                       | 20         |
-| items.1.quantity     | 1                           | 21         |
-| street               | 123 Tornado Alley           | 28         |
-|                      | Suite 16                    |            |
-| state                | KS                          | 27         |
-| items.0.description  | Water Bucket (Filled)       | 12         |
-| items.0.price        | 1.47                        | 14         |
-| date                 | 2012-08-06T00:00:00Z        | 9          |
-| items.0.part_no      | A4786                       | 13         |
-| items.1.description  | High Heeled "Ruby" Slippers | 18         |
-| customer.family_name | Gale                        | 5          |
-| receipt              | Oz-Ware Purchase Invoice    | 25         |
-| items.0.quantity     | 4                           | 15         |
-+----------------------+-----------------------------+------------+
-```
-
-or, you can query configurations of a particular file using:
-
-```sql
-select
-  key_path,
-  value,
-  path
-from
-  json_key_value
-where
-  path = '/Users/myuser/json/invoice.json';
-```
-
-```sh
-+----------------------+-----------------------------+---------------------------------+
-| key_path             | value                       | path                            |
-+----------------------+-----------------------------+---------------------------------+
-| items.1.size         | 8                           | /Users/myuser/json/invoice.json |
-| customer.family_name | Gale                        | /Users/myuser/json/invoice.json |
-| items.1.part_no      | E1628                       | /Users/myuser/json/invoice.json |
-| items.0.part_no      | A4786                       | /Users/myuser/json/invoice.json |
-| items.0.price        | 1.47                        | /Users/myuser/json/invoice.json |
-| date                 | 2012-08-06                  | /Users/myuser/json/invoice.json |
-| items.1.price        | 133.7                       | /Users/myuser/json/invoice.json |
-| customer.first_name  | Dorothy                     | /Users/myuser/json/invoice.json |
-| includes.0           | common.yaml                 | /Users/myuser/json/invoice.json |
-| foo                  | bar                         | /Users/myuser/json/invoice.json |
-| items.1.description  | High Heeled "Ruby" Slippers | /Users/myuser/json/invoice.json |
-| receipt              | Oz-Ware Purchase Invoice    | /Users/myuser/json/invoice.json |
-| items.0.quantity     | 4                           | /Users/myuser/json/invoice.json |
-| items.0.description  | Water Bucket (Filled)       | /Users/myuser/json/invoice.json |
-| city                 | East Centerville            | /Users/myuser/json/invoice.json |
-| items.1.quantity     | 1                           | /Users/myuser/json/invoice.json |
-+----------------------+-----------------------------+---------------------------------+
-```
+The `json_key_value` table provides insights into JSON key-value pairs within OCI Config. As a DevOps engineer, explore key-value specific details through this table, including keys, values, and associated metadata. Utilize it to uncover information about key-value pairs, such as those with specific keys, the relationships between keys and values, and the verification of key-value pairs.
 
 ## Examples
 
@@ -117,8 +50,9 @@ For all examples below, assume we're using the file `invoice.json` with the foll
 ```
 
 ### Query a specific key-value pair
-
+Analyze the contents of a specific JSON file to identify a particular item's part number. This is beneficial in situations where you need to quickly access a specific detail from a large dataset, such as an invoice, without having to manually search through the entire document.
 You can query a specific key path to get its value:
+
 
 ```sql
 select
@@ -140,10 +74,11 @@ where
 ```
 
 ### Query using comparison operators
-
+Explore specific segments of a JSON file, such as 'invoice.json', to identify key data points. This can be useful in scenarios where you want to examine certain parts of your data without going through the entire file.
 The usual comparison operators, like `<`, `>`, `<=`, and `>=` work with `ltree` columns.
 
 For instance, you can use the `<` operator to query all key paths that are before `items` alphabetically:
+
 
 ```sql
 select
@@ -169,8 +104,9 @@ where
 ```
 
 ### Query using path matching
-
+Explore which parts are listed in a specific invoice file, allowing you to assess the items included in transactions without manually navigating the JSON file.
 `ltree` also supports additional operators like `~` which can be used to find all `part_no` subkeys:
+
 
 ```sql
 select
@@ -193,6 +129,7 @@ where
 ```
 
 ### List descendants of a specific node
+Explore the specific sections of a JSON file to uncover the details related to a particular keyword. This can be useful in scenarios where you need to understand the information related to a particular user or entity within a larger dataset.
 
 ```sql
 select
@@ -215,6 +152,7 @@ where
 ```
 
 ### Create a pivot table and search for a specific key
+This example demonstrates how to organize and search for specific information within a JSON invoice document. It's useful for gaining insights into individual items, such as their part numbers, descriptions, sizes, quantities, and prices.
 
 ```sql
 with items as (
@@ -287,8 +225,9 @@ select * from pivot_tables where part_no = 'E1628';
 ```
 
 ### Casting column data for analysis
-
+Determine the areas in which specific item details, such as part number, name, size, quantity, and price, can be extracted and analyzed from a JSON invoice file. This is useful for gaining insights into individual product data for further business analysis and decision-making.
 The `value` column data type is `text`, so you can easily cast it when required:
+
 
 ```sql
 with items as (

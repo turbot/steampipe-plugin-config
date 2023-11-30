@@ -1,114 +1,20 @@
-# Table: json_file
+---
+title: "Steampipe Table: json_file - Query OCI Config JSON Files using SQL"
+description: "Allows users to query JSON Files in OCI Config, specifically the file content in JSON format, providing insights into configuration data and potential inconsistencies."
+---
 
-Query the file contents from JSON files found in the configured `json_paths`.
+# Table: json_file - Query OCI Config JSON Files using SQL
 
-For instance, if `json_paths` is set to `[ "/Users/myuser/*.json" ]`, and that directory contains:
+Oracle Cloud Infrastructure (OCI) Config is a service that allows you to assess, audit, and evaluate the configurations of your OCI resources. It provides a centralized way to manage and evaluate configurations, including JSON files, across your OCI resources. OCI Config helps you maintain the desired state of your resources and take appropriate actions when predefined conditions are met.
 
-- invoice.json
-- test.json
+## Table Usage Guide
 
-This table will retrieve the file contents from each file mentioned above, which you can then query directly:
-
-```sql
-select
-  path,
-  jsonb_pretty(content) as file_content
-from
-  json_file;
-```
-
-```sh
-+----------------------------+------------------------------------------------------------+
-| path                       | file_content                                               |
-+----------------------------+------------------------------------------------------------+
-| /Users/myuser/invoice.json | {                                                          |
-|                            |     "city": "East Centerville",                            |
-|                            |     "date": "2012-08-06T00:00:00Z",                        |
-|                            |     "items": [                                             |
-|                            |         {                                                  |
-|                            |             "price": 1.47,                                 |
-|                            |             "part_no": "A4786",                            |
-|                            |             "quantity": 4,                                 |
-|                            |             "description": "Water Bucket (Filled)"         |
-|                            |         },                                                 |
-|                            |         {                                                  |
-|                            |             "size": 8,                                     |
-|                            |             "price": 133.7,                                |
-|                            |             "part_no": "E1628",                            |
-|                            |             "quantity": 1,                                 |
-|                            |             "description": "High Heeled \"Ruby\" Slippers" |
-|                            |         }                                                  |
-|                            |     ],                                                     |
-|                            |     "state": "KS",                                         |
-|                            |     "street": "123 Tornado Alley\nSuite 16\n",             |
-|                            |     "bill-to": null,                                       |
-|                            |     "receipt": "Oz-Ware Purchase Invoice",                 |
-|                            |     "ship-to": null,                                       |
-|                            |     "customer": {                                          |
-|                            |         "first_name": "Dorothy",                           |
-|                            |         "family_name": "Gale"                              |
-|                            |     },                                                     |
-|                            | }                                                          |
-| /Users/myuser/test.json    | {                                                          |
-|                            |     "foo": "bar",                                          |
-|                            |     "includes": [                                          |
-|                            |         "common.json"                                      |
-|                            |     ]                                                      |
-|                            | }                                                          |
-+----------------------------+------------------------------------------------------------+
-```
-
-or, you can query configurations of a particular file using:
-
-```sql
-select
-  path,
-  jsonb_pretty(content) as file_content
-from
-  json_file
-where
-  path = '/Users/myuser/invoice.json';
-```
-
-```sh
-+----------------------------+------------------------------------------------------------+
-| path                       | file_content                                               |
-+----------------------------+------------------------------------------------------------+
-| /Users/myuser/invoice.json | {                                                          |
-|                            |     "city": "East Centerville",                            |
-|                            |     "date": "2012-08-06T00:00:00Z",                        |
-|                            |     "items": [                                             |
-|                            |         {                                                  |
-|                            |             "price": 1.47,                                 |
-|                            |             "part_no": "A4786",                            |
-|                            |             "quantity": 4,                                 |
-|                            |             "description": "Water Bucket (Filled)"         |
-|                            |         },                                                 |
-|                            |         {                                                  |
-|                            |             "size": 8,                                     |
-|                            |             "price": 133.7,                                |
-|                            |             "part_no": "E1628",                            |
-|                            |             "quantity": 1,                                 |
-|                            |             "description": "High Heeled \"Ruby\" Slippers" |
-|                            |         }                                                  |
-|                            |     ],                                                     |
-|                            |     "state": "KS",                                         |
-|                            |     "street": "123 Tornado Alley\nSuite 16\n",             |
-|                            |     "bill-to": null,                                       |
-|                            |     "receipt": "Oz-Ware Purchase Invoice",                 |
-|                            |     "ship-to": null,                                       |
-|                            |     "customer": {                                          |
-|                            |         "first_name": "Dorothy",                           |
-|                            |         "family_name": "Gale"                              |
-|                            |     },                                                     |
-|                            | }                                                          |
-+----------------------------+------------------------------------------------------------+
-```
+The `json_file` table provides insights into JSON files within OCI Config. As a DevOps engineer, explore file-specific details through this table, including content, file paths, and associated metadata. Utilize it to uncover information about JSON files, such as their content and location, and to verify the consistency of configuration data.
 
 ## Examples
 
 ### Query a simple file
-
+This query is useful for gaining insights into customer behavior by analyzing their purchase history. It enables you to identify the date of purchase, the customer's name, and the quantity of items ordered, which can be instrumental in understanding customer preferences and trends.
 Given the file `invoice.json` with the following configuration:
 
 ```json
@@ -141,6 +47,7 @@ Given the file `invoice.json` with the following configuration:
 
 You can query the customer details and the number of items ordered:
 
+
 ```sql
 select
   content ->> 'date' as order_date,
@@ -161,8 +68,9 @@ where
 ```
 
 ### Casting column data for analysis
-
+Determine the areas in which specific customer purchases can be analyzed. This allows for a detailed breakdown of individual transactions, including the customer's name, product descriptions, and the total cost of each item purchased.
 Text columns can be easily cast to other types:
+
 
 ```sql
 select

@@ -1,75 +1,20 @@
-# Table: ini_key_value
+---
+title: "Steampipe Table: ini_key_value - Query Config INI Key Values using SQL"
+description: "Allows users to query INI Key Values in Config, specifically the key-value pairs in INI configuration files, enabling detailed analysis of configuration settings."
+---
 
-Query section and key-value pair data from INI files found in the configured `ini_paths`.
+# Table: ini_key_value - Query Config INI Key Values using SQL
 
-For instance, if `ini_paths` is set to `[ "/Users/myuser/*.ini" ]`, and that directory contains:
+INI Key Values in Config are key-value pairs in INI configuration files. These are used to store configuration settings in a structured format that is easy to read and write. These key-value pairs can be used to configure the behavior of software applications, libraries, and drivers.
 
-- defaults.ini
-- sample.ini
+## Table Usage Guide
 
-This table will retrieve all key-value pairs from each file mentioned above, along with section names and comments, which you can then query directly:
-
-```sql
-select
-  path,
-  section,
-  key,
-  value,
-  comment
-from
-  ini_key_value;
-```
-
-```sh
-+----------------------------+-----------------+-----------------------+---------------------+---------------------+
-| path                       | section         | key                   | value               | comment             |
-+----------------------------+-----------------+-----------------------+---------------------+---------------------+
-| /Users/myuser/defaults.ini | security        | admin_user            | admin               |                     |
-| /Users/myuser/defaults.ini | DEFAULT         | instance_name         | my-instance         | # default section   |
-| /Users/myuser/defaults.ini | auth.google     | client_secret         | 0ldS3cretKey        |                     |
-| /Users/myuser/defaults.ini | plugin.grafana. | ignore_https_errors   | true                |                     |
-| /Users/myuser/defaults.ini | analytics       | check_for_updates     | false               |                     |
-| /Users/myuser/sample.ini   | DEFAULT         | app_mode              | development         |                     |
-| /Users/myuser/sample.ini   | paths           | data                  | /home/git/grafana   |                     |
-| /Users/myuser/sample.ini   | profile testing | aws_access_key_id     | foo                 |                     |
-| /Users/myuser/sample.ini   | profile testing | aws_secret_access_key | bar                 |                     |
-| /Users/myuser/sample.ini   | server          | enforce_domain        | true                |                     |
-| /Users/myuser/sample.ini   | server          | host                  | http://localhost:99 | # Update host later |
-| /Users/myuser/sample.ini   | server          | http_port             | 9999                |                     |
-| /Users/myuser/sample.ini   | server          | protocol              | http                |                     |
-+----------------------------+-----------------+-----------------------+---------------------+---------------------+
-```
-
-or, you can query configurations of a particular file using:
-
-```sql
-select
-  section,
-  key,
-  value,
-  comment
-from
-  ini_key_value
-where
-  path = '/Users/myuser/defaults.ini';
-```
-
-```sh
-+----------------------------+----------------+---------------------+--------------+-------------------+
-| path                       | section        | key                 | value        | comment           |
-+----------------------------+----------------+---------------------+--------------+-------------------+
-| /Users/myuser/defaults.ini | security       | admin_user          | admin        |                   |
-| /Users/myuser/defaults.ini | DEFAULT        | instance_name       | my-instance  | # default section |
-| /Users/myuser/defaults.ini | auth.google    | client_secret       | 0ldS3cretKey |                   |
-| /Users/myuser/defaults.ini | plugin.grafana | ignore_https_errors | true         |                   |
-| /Users/myuser/defaults.ini | analytics      | check_for_updates   | false        |                   |
-+----------------------------+----------------+---------------------+--------------+-------------------+
-```
+The `ini_key_value` table provides insights into key-value pairs in INI configuration files within Config. As a DevOps engineer, explore key-value pair details through this table, including keys, values, and associated metadata. Utilize it to uncover information about configuration settings, such as those for software applications, libraries, and drivers.
 
 ## Examples
 
 ### Query a simple file
-
+This query allows you to explore the contents of a specific configuration file, which can help you understand and manage your application's settings. For instance, you might use this query to determine if certain security or analytics settings are configured as expected.
 Given the file `defaults.ini` with following configuration:
 
 ```bash
@@ -90,6 +35,7 @@ check_for_updates = false
 ```
 
 and the query is:
+
 
 ```sql
 select
@@ -138,8 +84,9 @@ where
 ```
 
 ### Casting column data for analysis
-
+Determine the areas in which automatic updates for analytics are disabled. This is useful to ensure that all analytics tools are up-to-date and running the latest versions.
 Text columns can be easily cast to other types:
+
 
 ```sql
 select
@@ -164,7 +111,7 @@ where
 ```
 
 ### Query a file with value interpolation
-
+Determine the specific settings and configurations within a file to gain insights into its structure and content. This can be useful for understanding how a system or application is configured and identifying any potential issues or areas for improvement.
 Given the file `defaults.ini` with following configuration:
 
 ```bash
@@ -194,6 +141,7 @@ export HOSTNAME=my-instance
 In the above INI file, the value for `instance_name` refers to an environment variable `${HOSTNAME}` and `url` refers to other another value in the same section.
 
 When querying values, the table will store the interpolated values, e.g., `${HOSTNAME}` will be stored as `my-instance`.
+
 
 ```sql
 select
