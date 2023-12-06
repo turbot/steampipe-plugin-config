@@ -1,15 +1,15 @@
 ---
-title: "Steampipe Table: json_key_value - Query OCI Config JSON Key Value using SQL"
-description: "Allows users to query JSON Key Values in OCI Config, specifically the JSON key-value pairs, providing insights into configuration data and potential anomalies."
+title: "Steampipe Table: json_key_value - Query Config JSON Key Value using SQL"
+description: "Allows users to query JSON Key Values in Config, specifically the JSON key-value pairs, providing insights into configuration data and potential anomalies."
 ---
 
-# Table: json_key_value - Query OCI Config JSON Key Values using SQL
+# Table: json_key_value - Query Config JSON Key Values using SQL
 
-The JSON Key Value is a resource within Oracle Cloud Infrastructure (OCI) Config that allows you to monitor and manage your JSON key-value pairs across your applications and infrastructure. It provides a centralized way to set up and manage key-value pairs for various OCI resources, including virtual machines, databases, web applications, and more. OCI Config JSON Key Value helps you stay informed about the health and performance of your OCI resources and take appropriate actions when predefined conditions are met.
+The JSON Key Value is a resource within Config that allows you to monitor and manage your JSON key-value pairs across your applications and infrastructure. It provides a centralized way to set up and manage key-value pairs for various config resources, including virtual machines, databases, web applications, and more. Config JSON Key Value helps you stay informed about the health and performance of your config resources and take appropriate actions when predefined conditions are met.
 
 ## Table Usage Guide
 
-The `json_key_value` table provides insights into JSON key-value pairs within OCI Config. As a DevOps engineer, explore key-value specific details through this table, including keys, values, and associated metadata. Utilize it to uncover information about key-value pairs, such as those with specific keys, the relationships between keys and values, and the verification of key-value pairs.
+The `json_key_value` table provides insights into JSON key-value pairs within Config. As a DevOps engineer, explore key-value specific details through this table, including keys, values, and associated metadata. Utilize it to uncover information about key-value pairs, such as those with specific keys, the relationships between keys and values, and the verification of key-value pairs.
 
 ## Examples
 

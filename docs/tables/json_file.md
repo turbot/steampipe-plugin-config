@@ -1,15 +1,15 @@
 ---
-title: "Steampipe Table: json_file - Query OCI Config JSON Files using SQL"
-description: "Allows users to query JSON Files in OCI Config, specifically the file content in JSON format, providing insights into configuration data and potential inconsistencies."
+title: "Steampipe Table: json_file - Query Config JSON Files using SQL"
+description: "Allows users to query JSON Files in Config, specifically the file content in JSON format, providing insights into configuration data and potential inconsistencies."
 ---
 
-# Table: json_file - Query OCI Config JSON Files using SQL
+# Table: json_file - Query Config JSON Files using SQL
 
-Oracle Cloud Infrastructure (OCI) Config is a service that allows you to assess, audit, and evaluate the configurations of your OCI resources. It provides a centralized way to manage and evaluate configurations, including JSON files, across your OCI resources. OCI Config helps you maintain the desired state of your resources and take appropriate actions when predefined conditions are met.
+Config is a service that allows you to assess, audit, and evaluate the configurations of your config resources. It provides a centralized way to manage and evaluate configurations, including JSON files, across your config resources. Config helps you maintain the desired state of your resources and take appropriate actions when predefined conditions are met.
 
 ## Table Usage Guide
 
-The `json_file` table provides insights into JSON files within OCI Config. As a DevOps engineer, explore file-specific details through this table, including content, file paths, and associated metadata. Utilize it to uncover information about JSON files, such as their content and location, and to verify the consistency of configuration data.
+The `json_file` table provides insights into JSON files within Config. As a DevOps engineer, explore file-specific details through this table, including content, file paths, and associated metadata. Utilize it to uncover information about JSON files, such as their content and location, and to verify the consistency of configuration data.
 
 ## Examples
 

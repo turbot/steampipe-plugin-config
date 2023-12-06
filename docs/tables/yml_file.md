@@ -1,15 +1,15 @@
 ---
-title: "Steampipe Table: yml_file - Query OCI Config YML Files using SQL"
-description: "Allows users to query YML Files in OCI Config, specifically the details of each YML file, providing insights into file content and potential anomalies."
+title: "Steampipe Table: yml_file - Query Config YML Files using SQL"
+description: "Allows users to query YML Files in Config, specifically the details of each YML file, providing insights into file content and potential anomalies."
 ---
 
-# Table: yml_file - Query OCI Config YML Files using SQL
+# Table: yml_file - Query Config YML Files using SQL
 
-Oracle Cloud Infrastructure (OCI) Config is a service that allows you to assess and evaluate the configurations of your OCI resources. It helps in managing, monitoring, and auditing resource configurations over time. An important part of this service is the YML Files, which contain the configuration details of various resources.
+Config is a service that allows you to assess and evaluate the configurations of your config resources. It helps in managing, monitoring, and auditing resource configurations over time. An important part of this service is the YML Files, which contain the configuration details of various resources.
 
 ## Table Usage Guide
 
-The `yml_file` table provides insights into YML Files within OCI Config. As a Cloud Architect or DevOps engineer, explore file-specific details through this table, including content, file size, and associated metadata. Utilize it to uncover information about files, such as those with specific configurations, the relationships between different configurations, and the verification of file content.
+The `yml_file` table provides insights into YML Files within Config. As a Cloud Architect or DevOps engineer, explore file-specific details through this table, including content, file size, and associated metadata. Utilize it to uncover information about files, such as those with specific configurations, the relationships between different configurations, and the verification of file content.
 
 ## Examples
 

@@ -1,15 +1,15 @@
 ---
-title: "Steampipe Table: yml_key_value - Query OCI Config YML Key Values using SQL"
-description: "Allows users to query YML Key Values in OCI Config, specifically the keys and their corresponding values in a YAML file, providing insights into configuration details and potential discrepancies."
+title: "Steampipe Table: yml_key_value - Query Config YML Key Values using SQL"
+description: "Allows users to query YML Key Values in Config, specifically the keys and their corresponding values in a YAML file, providing insights into configuration details and potential discrepancies."
 ---
 
-# Table: yml_key_value - Query OCI Config YML Key Values using SQL
+# Table: yml_key_value - Query Config YML Key Values using SQL
 
-Oracle Cloud Infrastructure (OCI) Config is a service that enables you to assess, audit, and evaluate the configurations of your OCI resources. It provides a real-time snapshot of your resource configurations and lets you monitor configuration changes over time. OCI Config helps you to ensure that your resources comply with your corporate standards and best practices.
+Config is a service that enables you to assess, audit, and evaluate the configurations of your config resources. It provides a real-time snapshot of your resource configurations and lets you monitor configuration changes over time. Config helps you to ensure that your resources comply with your corporate standards and best practices.
 
 ## Table Usage Guide
 
-The `yml_key_value` table provides insights into key-value pairs within YAML files in OCI Config. As a DevOps engineer, explore key-specific details through this table, including their corresponding values and associated metadata. Utilize it to uncover information about keys, such as their hierarchal structure, the relationships between keys, and the verification of key values.
+The `yml_key_value` table provides insights into key-value pairs within YAML files in Config. As a DevOps engineer, explore key-specific details through this table, including their corresponding values and associated metadata. Utilize it to uncover information about keys, such as their hierarchal structure, the relationships between keys, and the verification of key values.
 
 ## Examples
 
