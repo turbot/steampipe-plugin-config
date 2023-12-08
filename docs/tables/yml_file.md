@@ -47,11 +47,22 @@ ship-to: *id001
 You can query the customer details and the number of items ordered:
 
 
-```sql
+```sql+postgres
 select
   content ->> 'date' as order_date,
   concat(content -> 'customer' ->> 'first_name', ' ', content -> 'customer' ->> 'family_name') as customer_name,
   jsonb_array_length(content -> 'items') as order_count
+from
+  yml_file
+where
+  path = '/Users/myuser/invoice.yml';
+```
+
+```sql+sqlite
+select
+  json_extract(content, '$.date') as order_date,
+  (json_extract(content, '$.customer.first_name') || ' ' || json_extract(content, '$.customer.family_name')) as customer_name,
+  json_array_length(json_extract(content, '$.items')) as order_count
 from
   yml_file
 where
@@ -71,7 +82,7 @@ Explore which items a customer has purchased and how much they've spent in total
 Text columns can be easily cast to other types:
 
 
-```sql
+```sql+postgres
 select
   (content ->> 'date')::timestamp as order_date,
   concat(content -> 'customer' ->> 'first_name', ' ', content -> 'customer' ->> 'family_name') as customer_name,
@@ -82,6 +93,21 @@ select
 from
   yml_file,
   jsonb_array_elements(content -> 'items') as item
+where
+  path = '/Users/myuser/invoice.yml';
+```
+
+```sql+sqlite
+select
+  json_extract(content, '$.date') as order_date,
+  (json_extract(content, '$.customer.first_name') || ' ' || json_extract(content, '$.customer.family_name')) as customer_name,
+  json_extract(item.value, '$.description') as description,
+  cast(json_extract(item.value, '$.price') as float) as price,
+  cast(json_extract(item.value, '$.quantity') as integer) as quantity,
+  cast(json_extract(item.value, '$.price') as float) * cast(json_extract(item.value, '$.quantity') as integer) as total
+from
+  yml_file,
+  json_each(json_extract(content, '$.items')) as item
 where
   path = '/Users/myuser/invoice.yml';
 ```

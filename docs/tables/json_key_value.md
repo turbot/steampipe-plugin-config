@@ -54,7 +54,18 @@ Analyze the contents of a specific JSON file to identify a particular item's par
 You can query a specific key path to get its value:
 
 
-```sql
+```sql+postgres
+select
+  key_path,
+  value as part_no
+from
+  json_key_value
+where
+  path = '/Users/myuser/json/invoice.json'
+  and key_path = 'items.0.part_no';
+```
+
+```sql+sqlite
 select
   key_path,
   value as part_no
@@ -80,7 +91,18 @@ The usual comparison operators, like `<`, `>`, `<=`, and `>=` work with `ltree` 
 For instance, you can use the `<` operator to query all key paths that are before `items` alphabetically:
 
 
-```sql
+```sql+postgres
+select
+  key_path,
+  value as part_no
+from
+  json_key_value
+where
+  path = '/Users/myuser/json/invoice.json'
+  and key_path < 'items';
+```
+
+```sql+sqlite
 select
   key_path,
   value as part_no
@@ -108,7 +130,7 @@ Explore which parts are listed in a specific invoice file, allowing you to asses
 `ltree` also supports additional operators like `~` which can be used to find all `part_no` subkeys:
 
 
-```sql
+```sql+postgres
 select
   key_path,
   value as part_no
@@ -117,6 +139,10 @@ from
 where
   path = '/Users/myuser/json/invoice.json'
   and key_path ~ 'items.*.part_no';
+```
+
+```sql+sqlite
+Error: SQLite does not support regular expressions.
 ```
 
 ```sh
@@ -131,7 +157,7 @@ where
 ### List descendants of a specific node
 Explore the specific sections of a JSON file to uncover the details related to a particular keyword. This can be useful in scenarios where you need to understand the information related to a particular user or entity within a larger dataset.
 
-```sql
+```sql+postgres
 select
   key_path,
   value
@@ -140,6 +166,10 @@ from
 where
   path = '/Users/myuser/json/invoice.json'
   and key_path <@ 'customer';
+```
+
+```sql+sqlite
+Error: SQLite does not support array operators like <@.
 ```
 
 ```sh
@@ -154,7 +184,7 @@ where
 ### Create a pivot table and search for a specific key
 This example demonstrates how to organize and search for specific information within a JSON invoice document. It's useful for gaining insights into individual items, such as their part numbers, descriptions, sizes, quantities, and prices.
 
-```sql
+```sql+postgres
 with items as (
   select
     subpath(key_path, 0, 2) as item,
@@ -178,6 +208,10 @@ group by
   item;
 ```
 
+```sql+sqlite
+Error: SQLite does not support the subpath and ~ (regex match) functions used in the PostgreSQL query.
+```
+
 ```sh
 +---------+-----------------------------+--------+----------+-------+
 | part_no | item_name                   | size   | quantity | price |
@@ -189,7 +223,7 @@ group by
 
 You can also check the value for a particular key:
 
-```sql
+```sql+postgres
 with items as (
   select
     subpath(key_path, 0, 2) as item,
@@ -216,6 +250,10 @@ group by
 select * from pivot_tables where part_no = 'E1628';
 ```
 
+```sql+sqlite
+Error: SQLite does not support subpath and ~ (regular expression) functions.
+```
+
 ```sh
 +---------+-----------------------------+--------+----------+-------+
 | part_no | item_name                   | size   | quantity | price |
@@ -229,7 +267,7 @@ Determine the areas in which specific item details, such as part number, name, s
 The `value` column data type is `text`, so you can easily cast it when required:
 
 
-```sql
+```sql+postgres
 with items as (
   select
     subpath(key_path, 0, 2) as item,
@@ -251,6 +289,10 @@ from
   items
 group by
   item;
+```
+
+```sql+sqlite
+Error: SQLite does not support regular expressions and array functions like 'subpath' and '~' used in the PostgreSQL query.
 ```
 
 ```sh

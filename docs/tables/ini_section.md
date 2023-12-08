@@ -16,7 +16,16 @@ The `ini_section` table provides insights into INI sections within configuration
 ### Basic info
 Explore the structure and comments of your configuration files to better understand their organization and purpose. This can be particularly useful when troubleshooting or optimizing your system setup.
 
-```sql
+```sql+postgres
+select
+  path,
+  section,
+  comment
+from
+  ini_section;
+```
+
+```sql+sqlite
 select
   path,
   section,
@@ -28,7 +37,18 @@ from
 ### List sections for a specific file
 Explore which sections and associated comments are present in a specific configuration file. This is useful for understanding the configuration and settings of your applications.
 
-```sql
+```sql+postgres
+select
+  path,
+  section,
+  comment
+from
+  ini_section
+where
+  path = '/Users/myuser/configs/main.ini';
+```
+
+```sql+sqlite
 select
   path,
   section,
@@ -42,7 +62,18 @@ where
 ### List subsections for a specific section
 Discover the segments that fall under a particular category in your configuration files. This can be useful when you need to understand the structure of a specific section for easier navigation and management.
 
-```sql
+```sql+postgres
+select
+  path,
+  section,
+  comment
+from
+  ini_section
+where
+  section like 'settings.%';
+```
+
+```sql+sqlite
 select
   path,
   section,

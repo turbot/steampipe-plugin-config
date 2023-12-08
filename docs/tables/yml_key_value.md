@@ -53,7 +53,18 @@ Explore a specific key-value pair in a YAML file to quickly identify a particula
 You can query a specific key path to get its value:
 
 
-```sql
+```sql+postgres
+select
+  key_path,
+  value as part_no
+from
+  json_key_value
+where
+  path = '/Users/myuser/yml/invoice.yml'
+  and key_path = 'items.0.part_no';
+```
+
+```sql+sqlite
 select
   key_path,
   value as part_no
@@ -79,7 +90,18 @@ The usual comparison operators, like `<`, `>`, `<=`, and `>=` work with `ltree` 
 For instance, you can use the `<` operator to query all key paths that are before `items` alphabetically:
 
 
-```sql
+```sql+postgres
+select
+  key_path,
+  value as part_no
+from
+  json_key_value
+where
+  path = '/Users/myuser/yml/invoice.yml'
+  and key_path < 'items';
+```
+
+```sql+sqlite
 select
   key_path,
   value as part_no
@@ -107,7 +129,7 @@ Explore specific parts within an invoice file to identify their unique part numb
 `ltree` also supports additional operators like `~` which can be used to find all `part_no` subkeys:
 
 
-```sql
+```sql+postgres
 select
   key_path,
   value as part_no
@@ -116,6 +138,10 @@ from
 where
   path = '/Users/myuser/yml/invoice.yml'
   and key_path ~ 'items.*.part_no';
+```
+
+```sql+sqlite
+Error: SQLite does not support regular expression matching with the ~ operator.
 ```
 
 ```sh
@@ -130,7 +156,7 @@ where
 ### List descendants of a specific node
 Determine the details associated with a specific customer in an invoice file. This is useful for gaining insights into the customer's information, such as their first and last names.
 
-```sql
+```sql+postgres
 select
   key_path,
   value
@@ -139,6 +165,10 @@ from
 where
   path = '/Users/myuser/yml/invoice.yml'
   and key_path <@ 'customer';
+```
+
+```sql+sqlite
+Error: SQLite does not support the <@ operator used in PostgreSQL for array comparison.
 ```
 
 ```sh
@@ -153,7 +183,7 @@ where
 ### Create a pivot table and search for a specific key
 This example demonstrates how to organize and examine data from a YAML file, specifically the details of different items from an invoice. The query allows for the easy examination of specific item details such as part number, item name, size, quantity, and price. Additionally, it provides a way to pinpoint information for a particular item using its part number, making it a valuable tool for inventory management and financial tracking.
 
-```sql
+```sql+postgres
 with items as (
   select
     subpath(key_path, 0, 2) as item,
@@ -177,6 +207,10 @@ group by
   item;
 ```
 
+```sql+sqlite
+Error: SQLite does not support array operations like subpath and '~' operator.
+```
+
 ```sh
 +---------+-----------------------------+--------+----------+-------+
 | part_no | item_name                   | size   | quantity | price |
@@ -188,7 +222,7 @@ group by
 
 You can also check the value for a particular key:
 
-```sql
+```sql+postgres
 with items as (
   select
     subpath(key_path, 0, 2) as item,
@@ -215,6 +249,10 @@ group by
 select * from pivot_tables where part_no = 'E1628';
 ```
 
+```sql+sqlite
+Error: SQLite does not support the subpath function which is used in the PostgreSQL query.
+```
+
 ```sh
 +---------+-----------------------------+--------+----------+-------+
 | part_no | item_name                   | size   | quantity | price |
@@ -228,7 +266,7 @@ This query is used to restructure and analyze invoice data stored in a YAML file
 The `value` column data type is `text`, so you can easily cast it when required:
 
 
-```sql
+```sql+postgres
 with items as (
   select
     subpath(key_path, 0, 2) as item,
@@ -250,6 +288,10 @@ from
   items
 group by
   item;
+```
+
+```sql+sqlite
+Error: SQLite does not support array operations like subpath and ~ used in the given PostgreSQL query.
 ```
 
 ```sh

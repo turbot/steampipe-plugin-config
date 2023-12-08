@@ -37,7 +37,18 @@ check_for_updates = false
 and the query is:
 
 
-```sql
+```sql+postgres
+select
+  section,
+  key,
+  value
+from
+  ini_key_value
+where
+  path = '/Users/myuser/defaults.ini';
+```
+
+```sql+sqlite
 select
   section,
   key,
@@ -62,7 +73,20 @@ where
 
 or, you can check the value for a particular key:
 
-```sql
+```sql+postgres
+select
+  section,
+  key,
+  value
+from
+  ini_key_value
+where
+  path = '/Users/myuser/defaults.ini'
+  and section = 'analytics'
+  and key = 'check_for_updates';
+```
+
+```sql+sqlite
 select
   section,
   key,
@@ -88,7 +112,7 @@ Determine the areas in which automatic updates for analytics are disabled. This 
 Text columns can be easily cast to other types:
 
 
-```sql
+```sql+postgres
 select
   section,
   key,
@@ -100,6 +124,20 @@ where
   and section = 'analytics'
   and key = 'check_for_updates'
   and not value::bool;
+```
+
+```sql+sqlite
+select
+  section,
+  key,
+  value in ('t', 'true', '1')
+from
+  ini_key_value
+where
+  path = '/Users/myuser/defaults.ini'
+  and section = 'analytics'
+  and key = 'check_for_updates'
+  and not value in ('t', 'true', '1');
 ```
 
 ```sh
@@ -143,7 +181,17 @@ In the above INI file, the value for `instance_name` refers to an environment va
 When querying values, the table will store the interpolated values, e.g., `${HOSTNAME}` will be stored as `my-instance`.
 
 
-```sql
+```sql+postgres
+select
+  key,
+  value
+from
+  ini_key_value
+where
+  path = '/Users/myuser/defaults.ini';
+```
+
+```sql+sqlite
 select
   key,
   value
