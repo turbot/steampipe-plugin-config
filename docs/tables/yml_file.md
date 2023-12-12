@@ -1,114 +1,20 @@
-# Table: yml_file
+---
+title: "Steampipe Table: yml_file - Query Config YML Files using SQL"
+description: "Allows users to query YML Files in Config, specifically the details of each YML file, providing insights into file content and potential anomalies."
+---
 
-Query the file contents from YML files found in the configured `yml_paths`.
+# Table: yml_file - Query Config YML Files using SQL
 
-For instance, if `yml_paths` is set to `[ "/Users/myuser/*.yml", "/Users/myuser/*.yaml" ]`, and that directory contains:
+Config is a service that allows you to assess and evaluate the configurations of your config resources. It helps in managing, monitoring, and auditing resource configurations over time. An important part of this service is the YML Files, which contain the configuration details of various resources.
 
-- invoice.yml
-- test.yaml
+## Table Usage Guide
 
-This table will retrieve the file contents in JSON format from each file mentioned above, which you can then query directly:
-
-```sql
-select
-  path,
-  jsonb_pretty(content) as file_content
-from
-  yml_file;
-```
-
-```sh
-+---------------------------+------------------------------------------------------------+
-| path                      | file_content                                               |
-+---------------------------+------------------------------------------------------------+
-| /Users/myuser/invoice.yml | {                                                          |
-|                           |     "city": "East Centerville",                            |
-|                           |     "date": "2012-08-06T00:00:00Z",                        |
-|                           |     "items": [                                             |
-|                           |         {                                                  |
-|                           |             "price": 1.47,                                 |
-|                           |             "part_no": "A4786",                            |
-|                           |             "quantity": 4,                                 |
-|                           |             "description": "Water Bucket (Filled)"         |
-|                           |         },                                                 |
-|                           |         {                                                  |
-|                           |             "size": 8,                                     |
-|                           |             "price": 133.7,                                |
-|                           |             "part_no": "E1628",                            |
-|                           |             "quantity": 1,                                 |
-|                           |             "description": "High Heeled \"Ruby\" Slippers" |
-|                           |         }                                                  |
-|                           |     ],                                                     |
-|                           |     "state": "KS",                                         |
-|                           |     "street": "123 Tornado Alley\nSuite 16\n",             |
-|                           |     "bill-to": null,                                       |
-|                           |     "receipt": "Oz-Ware Purchase Invoice",                 |
-|                           |     "ship-to": null,                                       |
-|                           |     "customer": {                                          |
-|                           |         "first_name": "Dorothy",                           |
-|                           |         "family_name": "Gale"                              |
-|                           |     },                                                     |
-|                           | }                                                          |
-| /Users/myuser/test.yaml   | {                                                          |
-|                           |     "foo": "bar",                                          |
-|                           |     "includes": [                                          |
-|                           |         "common.yaml"                                      |
-|                           |     ]                                                      |
-|                           | }                                                          |
-+---------------------------+------------------------------------------------------------+
-```
-
-or, you can query configurations of a particular file using:
-
-```sql
-select
-  path,
-  jsonb_pretty(content) as file_content
-from
-  yml_file
-where
-  path = '/Users/myuser/invoice.yml';
-```
-
-```sh
-+---------------------------+------------------------------------------------------------+
-| path                      | file_content                                               |
-+---------------------------+------------------------------------------------------------+
-| /Users/myuser/invoice.yml | {                                                          |
-|                           |     "city": "East Centerville",                            |
-|                           |     "date": "2012-08-06T00:00:00Z",                        |
-|                           |     "items": [                                             |
-|                           |         {                                                  |
-|                           |             "price": 1.47,                                 |
-|                           |             "part_no": "A4786",                            |
-|                           |             "quantity": 4,                                 |
-|                           |             "description": "Water Bucket (Filled)"         |
-|                           |         },                                                 |
-|                           |         {                                                  |
-|                           |             "size": 8,                                     |
-|                           |             "price": 133.7,                                |
-|                           |             "part_no": "E1628",                            |
-|                           |             "quantity": 1,                                 |
-|                           |             "description": "High Heeled \"Ruby\" Slippers" |
-|                           |         }                                                  |
-|                           |     ],                                                     |
-|                           |     "state": "KS",                                         |
-|                           |     "street": "123 Tornado Alley\nSuite 16\n",             |
-|                           |     "bill-to": null,                                       |
-|                           |     "receipt": "Oz-Ware Purchase Invoice",                 |
-|                           |     "ship-to": null,                                       |
-|                           |     "customer": {                                          |
-|                           |         "first_name": "Dorothy",                           |
-|                           |         "family_name": "Gale"                              |
-|                           |     },                                                     |
-|                           | }                                                          |
-+---------------------------+------------------------------------------------------------+
-```
+The `yml_file` table provides insights into YML Files within Config. As a Cloud Architect or DevOps engineer, explore file-specific details through this table, including content, file size, and associated metadata. Utilize it to uncover information about files, such as those with specific configurations, the relationships between different configurations, and the verification of file content.
 
 ## Examples
 
 ### Query a simple file
-
+This query is useful for gaining insights into customer purchase history from a specific file. It allows you to understand when and how many purchases a customer has made, which can help in analyzing customer behavior and trends.
 Given the file `invoice.yml` with the following configuration:
 
 ```yaml
@@ -140,11 +46,23 @@ ship-to: *id001
 
 You can query the customer details and the number of items ordered:
 
-```sql
+
+```sql+postgres
 select
   content ->> 'date' as order_date,
   concat(content -> 'customer' ->> 'first_name', ' ', content -> 'customer' ->> 'family_name') as customer_name,
   jsonb_array_length(content -> 'items') as order_count
+from
+  yml_file
+where
+  path = '/Users/myuser/invoice.yml';
+```
+
+```sql+sqlite
+select
+  json_extract(content, '$.date') as order_date,
+  (json_extract(content, '$.customer.first_name') || ' ' || json_extract(content, '$.customer.family_name')) as customer_name,
+  json_array_length(json_extract(content, '$.items')) as order_count
 from
   yml_file
 where
@@ -160,10 +78,11 @@ where
 ```
 
 ### Casting column data for analysis
-
+Explore which items a customer has purchased and how much they've spent in total. This is useful for understanding individual customer behavior and identifying your best-selling products.
 Text columns can be easily cast to other types:
 
-```sql
+
+```sql+postgres
 select
   (content ->> 'date')::timestamp as order_date,
   concat(content -> 'customer' ->> 'first_name', ' ', content -> 'customer' ->> 'family_name') as customer_name,
@@ -174,6 +93,21 @@ select
 from
   yml_file,
   jsonb_array_elements(content -> 'items') as item
+where
+  path = '/Users/myuser/invoice.yml';
+```
+
+```sql+sqlite
+select
+  json_extract(content, '$.date') as order_date,
+  (json_extract(content, '$.customer.first_name') || ' ' || json_extract(content, '$.customer.family_name')) as customer_name,
+  json_extract(item.value, '$.description') as description,
+  cast(json_extract(item.value, '$.price') as float) as price,
+  cast(json_extract(item.value, '$.quantity') as integer) as quantity,
+  cast(json_extract(item.value, '$.price') as float) * cast(json_extract(item.value, '$.quantity') as integer) as total
+from
+  yml_file,
+  json_each(json_extract(content, '$.items')) as item
 where
   path = '/Users/myuser/invoice.yml';
 ```

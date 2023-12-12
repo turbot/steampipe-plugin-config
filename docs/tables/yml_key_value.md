@@ -1,87 +1,15 @@
-# Table: yml_key_value
+---
+title: "Steampipe Table: yml_key_value - Query Config YML Key Values using SQL"
+description: "Allows users to query YML Key Values in Config, specifically the keys and their corresponding values in a YAML file, providing insights into configuration details and potential discrepancies."
+---
 
-Query key-value pairs, comments, and line numbers from YML files found in the configured `yml_paths`.
+# Table: yml_key_value - Query Config YML Key Values using SQL
 
-For instance, if `yml_paths` is set to `[ "/Users/myuser/*.yml", "/Users/myuser/*.yaml" ]`, and that directory contains:
+Config is a service that enables you to assess, audit, and evaluate the configurations of your config resources. It provides a real-time snapshot of your resource configurations and lets you monitor configuration changes over time. Config helps you to ensure that your resources comply with your corporate standards and best practices.
 
-- sample.yml
-- invoice.yml
+## Table Usage Guide
 
-This table will retrieve all key-value pairs from each file mentioned above, along with comments and line numbers, which you can then query directly:
-
-```sql
-select
-  key_path,
-  value,
-  tag,
-  pre_comments,
-  start_line
-from
-  yml_key_value;
-```
-
-```sh
-+----------------------+-----------------------------+---------+-----------------------------+------------+
-| key_path             | value                       | tag     | pre_comments                | start_line |
-+----------------------+-----------------------------+---------+-----------------------------+------------+
-| items.1.size         | 8                           | !!int   | []                          | 15         |
-| customer.family_name | Gale                        | !!str   | []                          | 6          |
-| items.1.part_no      | E1628                       | !!str   | []                          | 13         |
-| items.0.part_no      | A4786                       | !!str   | ["# List of ordered items"] | 9          |
-| items.0.price        | 1.47                        | !!float | []                          | 11         |
-| date                 | 2012-08-06                  | !!str   | []                          | 3          |
-| items.1.price        | 133.7                       | !!float | []                          | 16         |
-| customer.first_name  | Dorothy                     | !!str   | []                          | 5          |
-| includes.0           | common.yaml                 | !!str   | []                          | 3          |
-| foo                  | bar                         | !!str   | []                          | 4          |
-| items.1.description  | High Heeled "Ruby" Slippers | !!str   | []                          | 14         |
-| receipt              | Oz-Ware Purchase Invoice    | !!str   | []                          | 2          |
-| items.0.quantity     | 4                           | !!int   | []                          | 12         |
-| items.0.description  | Water Bucket (Filled)       | !!str   | []                          | 10         |
-| city                 | East Centerville            | !!str   | []                          | 22         |
-| items.1.quantity     | 1                           | !!int   | []                          | 17         |
-| state                | KS                          | !!str   | []                          | 23         |
-| bill_to              | <null>                      | !!null  | []                          | 18         |
-| street               | 123 Tornado Alley           | !!str   | []                          | 19         |
-|                      | Suite 16                    |         |                             |            |
-+----------------------+-----------------------------+---------+-----------------------------+------------+
-```
-
-or, you can query configurations of a particular file using:
-
-```sql
-select
-  key_path,
-  value,
-  path
-from
-  yml_key_value
-where
-  path = '/Users/myuser/yml/invoice.yml';
-```
-
-```sh
-+----------------------+-----------------------------+-------------------------------+
-| key_path             | value                       | path                          |
-+----------------------+-----------------------------+-------------------------------+
-| items.1.size         | 8                           | /Users/myuser/yml/invoice.yml |
-| customer.family_name | Gale                        | /Users/myuser/yml/invoice.yml |
-| items.1.part_no      | E1628                       | /Users/myuser/yml/invoice.yml |
-| items.0.part_no      | A4786                       | /Users/myuser/yml/invoice.yml |
-| items.0.price        | 1.47                        | /Users/myuser/yml/invoice.yml |
-| date                 | 2012-08-06                  | /Users/myuser/yml/invoice.yml |
-| items.1.price        | 133.7                       | /Users/myuser/yml/invoice.yml |
-| customer.first_name  | Dorothy                     | /Users/myuser/yml/invoice.yml |
-| includes.0           | common.yaml                 | /Users/myuser/yml/invoice.yml |
-| foo                  | bar                         | /Users/myuser/yml/invoice.yml |
-| items.1.description  | High Heeled "Ruby" Slippers | /Users/myuser/yml/invoice.yml |
-| receipt              | Oz-Ware Purchase Invoice    | /Users/myuser/yml/invoice.yml |
-| items.0.quantity     | 4                           | /Users/myuser/yml/invoice.yml |
-| items.0.description  | Water Bucket (Filled)       | /Users/myuser/yml/invoice.yml |
-| city                 | East Centerville            | /Users/myuser/yml/invoice.yml |
-| items.1.quantity     | 1                           | /Users/myuser/yml/invoice.yml |
-+----------------------+-----------------------------+-------------------------------+
-```
+The `yml_key_value` table provides insights into key-value pairs within YAML files in Config. As a DevOps engineer, explore key-specific details through this table, including their corresponding values and associated metadata. Utilize it to uncover information about keys, such as their hierarchal structure, the relationships between keys, and the verification of key values.
 
 ## Examples
 
@@ -121,10 +49,22 @@ ship-to: *id001
 ```
 
 ### Query a specific key-value pair
-
+Explore a specific key-value pair in a YAML file to quickly identify a particular item's part number. This can be particularly useful for inventory management and tracking.
 You can query a specific key path to get its value:
 
-```sql
+
+```sql+postgres
+select
+  key_path,
+  value as part_no
+from
+  json_key_value
+where
+  path = '/Users/myuser/yml/invoice.yml'
+  and key_path = 'items.0.part_no';
+```
+
+```sql+sqlite
 select
   key_path,
   value as part_no
@@ -144,12 +84,24 @@ where
 ```
 
 ### Query using comparison operators
-
+Determine the areas in your system where certain keys are less than a specified value. This practical application can be useful in scenarios where you need to filter out specific segments of your data based on your set criteria.
 The usual comparison operators, like `<`, `>`, `<=`, and `>=` work with `ltree` columns.
 
 For instance, you can use the `<` operator to query all key paths that are before `items` alphabetically:
 
-```sql
+
+```sql+postgres
+select
+  key_path,
+  value as part_no
+from
+  json_key_value
+where
+  path = '/Users/myuser/yml/invoice.yml'
+  and key_path < 'items';
+```
+
+```sql+sqlite
 select
   key_path,
   value as part_no
@@ -173,10 +125,11 @@ where
 ```
 
 ### Query using path matching
-
+Explore specific parts within an invoice file to identify their unique part numbers. This is particularly useful when you need to quickly locate and assess individual parts within a large inventory.
 `ltree` also supports additional operators like `~` which can be used to find all `part_no` subkeys:
 
-```sql
+
+```sql+postgres
 select
   key_path,
   value as part_no
@@ -185,6 +138,10 @@ from
 where
   path = '/Users/myuser/yml/invoice.yml'
   and key_path ~ 'items.*.part_no';
+```
+
+```sql+sqlite
+Error: SQLite does not support regular expression matching with the ~ operator.
 ```
 
 ```sh
@@ -197,8 +154,9 @@ where
 ```
 
 ### List descendants of a specific node
+Determine the details associated with a specific customer in an invoice file. This is useful for gaining insights into the customer's information, such as their first and last names.
 
-```sql
+```sql+postgres
 select
   key_path,
   value
@@ -207,6 +165,10 @@ from
 where
   path = '/Users/myuser/yml/invoice.yml'
   and key_path <@ 'customer';
+```
+
+```sql+sqlite
+Error: SQLite does not support the <@ operator used in PostgreSQL for array comparison.
 ```
 
 ```sh
@@ -219,8 +181,9 @@ where
 ```
 
 ### Create a pivot table and search for a specific key
+This example demonstrates how to organize and examine data from a YAML file, specifically the details of different items from an invoice. The query allows for the easy examination of specific item details such as part number, item name, size, quantity, and price. Additionally, it provides a way to pinpoint information for a particular item using its part number, making it a valuable tool for inventory management and financial tracking.
 
-```sql
+```sql+postgres
 with items as (
   select
     subpath(key_path, 0, 2) as item,
@@ -244,6 +207,10 @@ group by
   item;
 ```
 
+```sql+sqlite
+Error: SQLite does not support array operations like subpath and '~' operator.
+```
+
 ```sh
 +---------+-----------------------------+--------+----------+-------+
 | part_no | item_name                   | size   | quantity | price |
@@ -255,7 +222,7 @@ group by
 
 You can also check the value for a particular key:
 
-```sql
+```sql+postgres
 with items as (
   select
     subpath(key_path, 0, 2) as item,
@@ -282,6 +249,10 @@ group by
 select * from pivot_tables where part_no = 'E1628';
 ```
 
+```sql+sqlite
+Error: SQLite does not support the subpath function which is used in the PostgreSQL query.
+```
+
 ```sh
 +---------+-----------------------------+--------+----------+-------+
 | part_no | item_name                   | size   | quantity | price |
@@ -291,10 +262,11 @@ select * from pivot_tables where part_no = 'E1628';
 ```
 
 ### Casting column data for analysis
-
+This query is used to restructure and analyze invoice data stored in a YAML file. It allows users to understand the details of each item in the invoice, such as the part number, item name, size, quantity, and price, by transforming the data into a more readable and analyzable format.
 The `value` column data type is `text`, so you can easily cast it when required:
 
-```sql
+
+```sql+postgres
 with items as (
   select
     subpath(key_path, 0, 2) as item,
@@ -316,6 +288,10 @@ from
   items
 group by
   item;
+```
+
+```sql+sqlite
+Error: SQLite does not support array operations like subpath and ~ used in the given PostgreSQL query.
 ```
 
 ```sh

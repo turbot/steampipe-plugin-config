@@ -8,6 +8,7 @@ short_name: "config"
 description: "Steampipe plugin to query data from various types of files like INI, JSON, YML and more."
 og_description: "Query data from various types of files with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/config-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # Config + Steampipe
@@ -396,7 +397,4 @@ connection "config" {
 }
 ```
 
-## Get involved
 
-- Open source: https://github.com/turbot/steampipe-plugin-config
-- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)

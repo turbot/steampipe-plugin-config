@@ -1,9 +1,17 @@
-# Table: json_file
+---
+title: "Steampipe Table: json_file - Query Config JSON Files using SQL"
+description: "Allows users to query JSON Files in Config, specifically the file content in JSON format, providing insights into configuration data and potential inconsistencies."
+---
 
-Query the file contents from JSON files found in the configured `json_paths`.
+# Table: json_file - Query Config JSON Files using SQL
+
+Config is a service that allows you to assess, audit, and evaluate the configurations of your config resources. It provides a centralized way to manage and evaluate configurations, including JSON files, across your config resources. Config helps you maintain the desired state of your resources and take appropriate actions when predefined conditions are met.
+
+## Table Usage Guide
+
+The `json_file` table provides insights into JSON files within Config. As a DevOps engineer, explore file-specific details through this table, including content, file paths, and associated metadata. Utilize it to uncover information about JSON files, such as their content and location, and to verify the consistency of configuration data.
 
 For instance, if `json_paths` is set to `[ "/Users/myuser/*.json" ]`, and that directory contains:
-
 - invoice.json
 - test.json
 
@@ -108,7 +116,7 @@ where
 ## Examples
 
 ### Query a simple file
-
+This query is useful for gaining insights into customer behavior by analyzing their purchase history. It enables you to identify the date of purchase, the customer's name, and the quantity of items ordered, which can be instrumental in understanding customer preferences and trends.
 Given the file `invoice.json` with the following configuration:
 
 ```json
@@ -141,11 +149,23 @@ Given the file `invoice.json` with the following configuration:
 
 You can query the customer details and the number of items ordered:
 
-```sql
+
+```sql+postgres
 select
   content ->> 'date' as order_date,
   concat(content -> 'customer' ->> 'first_name', ' ', content -> 'customer' ->> 'family_name') as customer_name,
   jsonb_array_length(content -> 'items') as order_count
+from
+  json_file
+where
+  path = '/Users/myuser/invoice.json';
+```
+
+```sql+sqlite
+select
+  json_extract(content, '$.date') as order_date,
+  (json_extract(content, '$.customer.first_name') || ' ' || json_extract(content, '$.customer.family_name')) as customer_name,
+  json_array_length(json_extract(content, '$.items')) as order_count
 from
   json_file
 where
@@ -161,10 +181,11 @@ where
 ```
 
 ### Casting column data for analysis
-
+Determine the areas in which specific customer purchases can be analyzed. This allows for a detailed breakdown of individual transactions, including the customer's name, product descriptions, and the total cost of each item purchased.
 Text columns can be easily cast to other types:
 
-```sql
+
+```sql+postgres
 select
   (content ->> 'date')::timestamp as order_date,
   concat(content -> 'customer' ->> 'first_name', ' ', content -> 'customer' ->> 'family_name') as customer_name,
@@ -175,6 +196,21 @@ select
 from
   json_file,
   jsonb_array_elements(content -> 'items') as item
+where
+  path = '/Users/myuser/invoice.json';
+```
+
+```sql+sqlite
+select
+  datetime(json_extract(content, '$.date')) as order_date,
+  json_extract(content, '$.customer.first_name') || ' ' || json_extract(content, '$.customer.family_name') as customer_name,
+  json_extract(item.value, '$.description') as description,
+  cast(json_extract(item.value, '$.price') as float) as price,
+  cast(json_extract(item.value, '$.quantity') as integer) as quantity,
+  cast(json_extract(item.value, '$.price') as float) * cast(json_extract(item.value, '$.quantity') as integer) as total
+from
+  json_file,
+  json_each(json_extract(content, '$.items')) as item
 where
   path = '/Users/myuser/invoice.json';
 ```
