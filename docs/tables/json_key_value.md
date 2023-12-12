@@ -11,6 +11,81 @@ The JSON Key Value is a resource within Config that allows you to monitor and ma
 
 The `json_key_value` table provides insights into JSON key-value pairs within Config. As a DevOps engineer, explore key-value specific details through this table, including keys, values, and associated metadata. Utilize it to uncover information about key-value pairs, such as those with specific keys, the relationships between keys and values, and the verification of key-value pairs.
 
+For instance, if `json_paths` is set to `[ "/Users/myuser/*.json" ]`, and that directory contains:
+- sample.json
+- invoice.json
+
+This table will retrieve all key-value pairs from each file mentioned above, along with line numbers, which you can then query directly:
+
+```sql
+select
+  key_path,
+  value,
+  start_line
+from
+  json_key_value;
+```
+
+```sh
++----------------------+-----------------------------+------------+
+| key_path             | value                       | start_line |
++----------------------+-----------------------------+------------+
+| items.1.part_no      | E1628                       | 19         |
+| customer.first_name  | Dorothy                     | 6          |
+| city                 | East Centerville            | 3          |
+| items.1.size         | 8                           | 22         |
+| items.1.price        | 133.7                       | 20         |
+| items.1.quantity     | 1                           | 21         |
+| street               | 123 Tornado Alley           | 28         |
+|                      | Suite 16                    |            |
+| state                | KS                          | 27         |
+| items.0.description  | Water Bucket (Filled)       | 12         |
+| items.0.price        | 1.47                        | 14         |
+| date                 | 2012-08-06T00:00:00Z        | 9          |
+| items.0.part_no      | A4786                       | 13         |
+| items.1.description  | High Heeled "Ruby" Slippers | 18         |
+| customer.family_name | Gale                        | 5          |
+| receipt              | Oz-Ware Purchase Invoice    | 25         |
+| items.0.quantity     | 4                           | 15         |
++----------------------+-----------------------------+------------+
+```
+
+or, you can query configurations of a particular file using:
+
+```sql
+select
+  key_path,
+  value,
+  path
+from
+  json_key_value
+where
+  path = '/Users/myuser/json/invoice.json';
+```
+
+```sh
++----------------------+-----------------------------+---------------------------------+
+| key_path             | value                       | path                            |
++----------------------+-----------------------------+---------------------------------+
+| items.1.size         | 8                           | /Users/myuser/json/invoice.json |
+| customer.family_name | Gale                        | /Users/myuser/json/invoice.json |
+| items.1.part_no      | E1628                       | /Users/myuser/json/invoice.json |
+| items.0.part_no      | A4786                       | /Users/myuser/json/invoice.json |
+| items.0.price        | 1.47                        | /Users/myuser/json/invoice.json |
+| date                 | 2012-08-06                  | /Users/myuser/json/invoice.json |
+| items.1.price        | 133.7                       | /Users/myuser/json/invoice.json |
+| customer.first_name  | Dorothy                     | /Users/myuser/json/invoice.json |
+| includes.0           | common.yaml                 | /Users/myuser/json/invoice.json |
+| foo                  | bar                         | /Users/myuser/json/invoice.json |
+| items.1.description  | High Heeled "Ruby" Slippers | /Users/myuser/json/invoice.json |
+| receipt              | Oz-Ware Purchase Invoice    | /Users/myuser/json/invoice.json |
+| items.0.quantity     | 4                           | /Users/myuser/json/invoice.json |
+| items.0.description  | Water Bucket (Filled)       | /Users/myuser/json/invoice.json |
+| city                 | East Centerville            | /Users/myuser/json/invoice.json |
+| items.1.quantity     | 1                           | /Users/myuser/json/invoice.json |
++----------------------+-----------------------------+---------------------------------+
+```
+
 ## Examples
 
 The `key_path` column's data type is
