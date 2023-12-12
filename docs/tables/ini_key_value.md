@@ -11,6 +11,65 @@ INI Key Values in Config are key-value pairs in INI configuration files. These a
 
 The `ini_key_value` table provides insights into key-value pairs in INI configuration files within Config. As a DevOps engineer, explore key-value pair details through this table, including keys, values, and associated metadata. Utilize it to uncover information about configuration settings, such as those for software applications, libraries, and drivers.
 
+This table will retrieve all key-value pairs from each file mentioned above, along with section names and comments, which you can then query directly:
+
+```sql
+select
+  path,
+  section,
+  key,
+  value,
+  comment
+from
+  ini_key_value;
+```
+
+```sh
++----------------------------+-----------------+-----------------------+---------------------+---------------------+
+| path                       | section         | key                   | value               | comment             |
++----------------------------+-----------------+-----------------------+---------------------+---------------------+
+| /Users/myuser/defaults.ini | security        | admin_user            | admin               |                     |
+| /Users/myuser/defaults.ini | DEFAULT         | instance_name         | my-instance         | # default section   |
+| /Users/myuser/defaults.ini | auth.google     | client_secret         | 0ldS3cretKey        |                     |
+| /Users/myuser/defaults.ini | plugin.grafana. | ignore_https_errors   | true                |                     |
+| /Users/myuser/defaults.ini | analytics       | check_for_updates     | false               |                     |
+| /Users/myuser/sample.ini   | DEFAULT         | app_mode              | development         |                     |
+| /Users/myuser/sample.ini   | paths           | data                  | /home/git/grafana   |                     |
+| /Users/myuser/sample.ini   | profile testing | aws_access_key_id     | foo                 |                     |
+| /Users/myuser/sample.ini   | profile testing | aws_secret_access_key | bar                 |                     |
+| /Users/myuser/sample.ini   | server          | enforce_domain        | true                |                     |
+| /Users/myuser/sample.ini   | server          | host                  | http://localhost:99 | # Update host later |
+| /Users/myuser/sample.ini   | server          | http_port             | 9999                |                     |
+| /Users/myuser/sample.ini   | server          | protocol              | http                |                     |
++----------------------------+-----------------+-----------------------+---------------------+---------------------+
+```
+
+or, you can query configurations of a particular file using:
+
+```sql
+select
+  section,
+  key,
+  value,
+  comment
+from
+  ini_key_value
+where
+  path = '/Users/myuser/defaults.ini';
+```
+
+```sh
++----------------------------+----------------+---------------------+--------------+-------------------+
+| path                       | section        | key                 | value        | comment           |
++----------------------------+----------------+---------------------+--------------+-------------------+
+| /Users/myuser/defaults.ini | security       | admin_user          | admin        |                   |
+| /Users/myuser/defaults.ini | DEFAULT        | instance_name       | my-instance  | # default section |
+| /Users/myuser/defaults.ini | auth.google    | client_secret       | 0ldS3cretKey |                   |
+| /Users/myuser/defaults.ini | plugin.grafana | ignore_https_errors | true         |                   |
+| /Users/myuser/defaults.ini | analytics      | check_for_updates   | false        |                   |
++----------------------------+----------------+---------------------+--------------+-------------------+
+```
+
 ## Examples
 
 ### Query a simple file
@@ -110,7 +169,6 @@ where
 ### Casting column data for analysis
 Determine the areas in which automatic updates for analytics are disabled. This is useful to ensure that all analytics tools are up-to-date and running the latest versions.
 Text columns can be easily cast to other types:
-
 
 ```sql+postgres
 select
