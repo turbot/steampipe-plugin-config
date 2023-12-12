@@ -11,6 +11,108 @@ Config is a service that allows you to assess, audit, and evaluate the configura
 
 The `json_file` table provides insights into JSON files within Config. As a DevOps engineer, explore file-specific details through this table, including content, file paths, and associated metadata. Utilize it to uncover information about JSON files, such as their content and location, and to verify the consistency of configuration data.
 
+For instance, if `json_paths` is set to `[ "/Users/myuser/*.json" ]`, and that directory contains:
+- invoice.json
+- test.json
+
+This table will retrieve the file contents from each file mentioned above, which you can then query directly:
+
+```sql
+select
+  path,
+  jsonb_pretty(content) as file_content
+from
+  json_file;
+```
+
+```sh
++----------------------------+------------------------------------------------------------+
+| path                       | file_content                                               |
++----------------------------+------------------------------------------------------------+
+| /Users/myuser/invoice.json | {                                                          |
+|                            |     "city": "East Centerville",                            |
+|                            |     "date": "2012-08-06T00:00:00Z",                        |
+|                            |     "items": [                                             |
+|                            |         {                                                  |
+|                            |             "price": 1.47,                                 |
+|                            |             "part_no": "A4786",                            |
+|                            |             "quantity": 4,                                 |
+|                            |             "description": "Water Bucket (Filled)"         |
+|                            |         },                                                 |
+|                            |         {                                                  |
+|                            |             "size": 8,                                     |
+|                            |             "price": 133.7,                                |
+|                            |             "part_no": "E1628",                            |
+|                            |             "quantity": 1,                                 |
+|                            |             "description": "High Heeled \"Ruby\" Slippers" |
+|                            |         }                                                  |
+|                            |     ],                                                     |
+|                            |     "state": "KS",                                         |
+|                            |     "street": "123 Tornado Alley\nSuite 16\n",             |
+|                            |     "bill-to": null,                                       |
+|                            |     "receipt": "Oz-Ware Purchase Invoice",                 |
+|                            |     "ship-to": null,                                       |
+|                            |     "customer": {                                          |
+|                            |         "first_name": "Dorothy",                           |
+|                            |         "family_name": "Gale"                              |
+|                            |     },                                                     |
+|                            | }                                                          |
+| /Users/myuser/test.json    | {                                                          |
+|                            |     "foo": "bar",                                          |
+|                            |     "includes": [                                          |
+|                            |         "common.json"                                      |
+|                            |     ]                                                      |
+|                            | }                                                          |
++----------------------------+------------------------------------------------------------+
+```
+
+or, you can query configurations of a particular file using:
+
+```sql
+select
+  path,
+  jsonb_pretty(content) as file_content
+from
+  json_file
+where
+  path = '/Users/myuser/invoice.json';
+```
+
+```sh
++----------------------------+------------------------------------------------------------+
+| path                       | file_content                                               |
++----------------------------+------------------------------------------------------------+
+| /Users/myuser/invoice.json | {                                                          |
+|                            |     "city": "East Centerville",                            |
+|                            |     "date": "2012-08-06T00:00:00Z",                        |
+|                            |     "items": [                                             |
+|                            |         {                                                  |
+|                            |             "price": 1.47,                                 |
+|                            |             "part_no": "A4786",                            |
+|                            |             "quantity": 4,                                 |
+|                            |             "description": "Water Bucket (Filled)"         |
+|                            |         },                                                 |
+|                            |         {                                                  |
+|                            |             "size": 8,                                     |
+|                            |             "price": 133.7,                                |
+|                            |             "part_no": "E1628",                            |
+|                            |             "quantity": 1,                                 |
+|                            |             "description": "High Heeled \"Ruby\" Slippers" |
+|                            |         }                                                  |
+|                            |     ],                                                     |
+|                            |     "state": "KS",                                         |
+|                            |     "street": "123 Tornado Alley\nSuite 16\n",             |
+|                            |     "bill-to": null,                                       |
+|                            |     "receipt": "Oz-Ware Purchase Invoice",                 |
+|                            |     "ship-to": null,                                       |
+|                            |     "customer": {                                          |
+|                            |         "first_name": "Dorothy",                           |
+|                            |         "family_name": "Gale"                              |
+|                            |     },                                                     |
+|                            | }                                                          |
++----------------------------+------------------------------------------------------------+
+```
+
 ## Examples
 
 ### Query a simple file
