@@ -1,12 +1,10 @@
 name: Release Steampipe Anywhere Components
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
         
 
 jobs:
   anywhere_publish_workflow:
-    uses: turbot/steampipe-workflows/.github/workflows/steampipe-anywhere.yml@main
+    uses: turbot/steampipe-workflows/.github/workflows/steampipe-anywhere.yml@hack
     secrets: inherit
