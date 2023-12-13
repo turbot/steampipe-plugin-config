@@ -2,28 +2,12 @@ package config
 
 import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/schema"
 )
 
 type parseConfig struct {
-	INIPaths  []string `cty:"ini_paths" steampipe:"watch"`
-	JSONPaths []string `cty:"json_paths" steampipe:"watch"`
-	YMLPaths  []string `cty:"yml_paths" steampipe:"watch"`
-}
-
-var ConfigSchema = map[string]*schema.Attribute{
-	"ini_paths": {
-		Type: schema.TypeList,
-		Elem: &schema.Attribute{Type: schema.TypeString},
-	},
-	"json_paths": {
-		Type: schema.TypeList,
-		Elem: &schema.Attribute{Type: schema.TypeString},
-	},
-	"yml_paths": {
-		Type: schema.TypeList,
-		Elem: &schema.Attribute{Type: schema.TypeString},
-	},
+	INIPaths  []string `hcl:"ini_paths,optional" steampipe:"watch"`
+	JSONPaths []string `hcl:"json_paths,optional" steampipe:"watch"`
+	YMLPaths  []string `hcl:"yml_paths,optional" steampipe:"watch"`
 }
 
 func ConfigInstance() interface{} {
