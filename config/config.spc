@@ -20,5 +20,6 @@ connection "config" {
   # All paths arguments default to CWD
   ini_paths  = [ "*.ini" ]
   json_paths = [ "*.json" ]
+  toml_paths = [ "*.toml" ]
   yml_paths  = [ "*.yml", "*.yaml" ]
 }
