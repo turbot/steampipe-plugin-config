@@ -323,7 +323,7 @@ connection "config" {
 
   ini_paths  = [ "*.ini", "~/*.ini", "/path/to/dir/main.ini" ]
   json_paths = [ "*.json", "~/*.json", "/path/to/dir/main.json" ]
-  toml_paths = [ "*.toml", "/path/to/dir/main.toml" ]
+  toml_paths = [ "*.toml", "~/*.toml", "/path/to/dir/main.toml" ]
   yml_paths  = [ "*.yml", "~/*.yaml", "/path/to/dir/main.yml" ]
 }
 ```
