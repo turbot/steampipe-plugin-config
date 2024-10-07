@@ -7,6 +7,7 @@ import (
 type parseConfig struct {
 	INIPaths  []string `hcl:"ini_paths,optional" steampipe:"watch"`
 	JSONPaths []string `hcl:"json_paths,optional" steampipe:"watch"`
+	TOMLPaths []string `hcl:"toml_paths,optional" steampipe:"watch"`
 	YMLPaths  []string `hcl:"yml_paths,optional" steampipe:"watch"`
 }
 
