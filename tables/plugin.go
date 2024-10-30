@@ -19,6 +19,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"ini_section":    tableINISection(ctx),
 			"json_file":      tableJSONFile(ctx),
 			"json_key_value": tableJSONKeyValue(ctx),
+			"toml_file":      tableTOMLFile(ctx),
 			"yml_file":       tableYMLFile(ctx),
 			"yml_key_value":  tableYMLKeyValue(ctx),
 		},

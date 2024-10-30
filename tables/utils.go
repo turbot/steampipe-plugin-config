@@ -53,6 +53,21 @@ func listJSONFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
 	return jsonFiles, nil
 }
 
+func listTOMLFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
+	// Glob paths in config
+	// Fail if no paths are specified
+	parseConfig := GetConfig(d.Connection)
+	if parseConfig.TOMLPaths == nil {
+		return nil, errors.New("toml_paths must be configured to query TOML files")
+	}
+
+	tomlFiles, err := listPathsByFileType(ctx, d, parseConfig.TOMLPaths)
+	if err != nil {
+		return nil, err
+	}
+	return tomlFiles, nil
+}
+
 func listPathsByFileType(ctx context.Context, d *plugin.QueryData, paths []string) ([]string, error) {
 	var matches []string
 	for _, i := range paths {
