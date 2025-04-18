@@ -1,4 +1,8 @@
-## v1.1.0 [2025-04-17]
+## v1.1.0 [2025-04-18]
+
+_What's new?_
+
+  - [toml_file](https://hub.steampipe.io/plugins/turbot/config/tables/toml) ([#58](https://github.com/turbot/steampipe-plugin-config/pull/58))
 
 _Dependencies_
 
