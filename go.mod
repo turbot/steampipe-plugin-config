@@ -6,7 +6,7 @@ toolchain go1.23.2
 
 require (
 	github.com/pelletier/go-toml/v2 v2.2.3
-	github.com/turbot/steampipe-plugin-sdk/v5 v5.11.6
+	github.com/turbot/steampipe-plugin-sdk/v5 v5.11.7
 	gopkg.in/ini.v1 v1.66.3
 	gopkg.in/yaml.v3 v3.0.1
 )
