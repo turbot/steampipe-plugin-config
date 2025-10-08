@@ -2,7 +2,8 @@
 
 _What's new?_
 
-  - [toml_file](https://hub.steampipe.io/plugins/turbot/config/tables/toml) ([#58](https://github.com/turbot/steampipe-plugin-config/pull/58))
+- New tables added
+  - [toml_file](https://hub.steampipe.io/plugins/turbot/config/tables/toml_file) ([#58](https://github.com/turbot/steampipe-plugin-config/pull/58)) (Thanks [@vil02](https://github.com/vil02) for the contribution!!)
 
 _Dependencies_
 
