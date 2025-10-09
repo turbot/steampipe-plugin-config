@@ -23,6 +23,21 @@ func listINIFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
 	return iniFiles, nil
 }
 
+func listXMLFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
+	// Glob paths in config
+	// Fail if no paths are specified
+	parseConfig := GetConfig(d.Connection)
+	if parseConfig.XMLPaths == nil {
+		return nil, errors.New("xml_paths must be configured to query XML files")
+	}
+
+	xmlFiles, err := listPathsByFileType(ctx, d, parseConfig.XMLPaths)
+	if err != nil {
+		return nil, err
+	}
+	return xmlFiles, nil
+}
+
 func listYMLFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
 	// Glob paths in config
 	// Fail if no paths are specified

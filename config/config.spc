@@ -21,5 +21,6 @@ connection "config" {
   ini_paths  = [ "*.ini" ]
   json_paths = [ "*.json" ]
   toml_paths = [ "*.toml" ]
+  xml_paths  = [ "*.xml" ]
   yml_paths  = [ "*.yml", "*.yaml" ]
 }
