@@ -8,64 +8,16 @@ import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 )
 
-func listINIFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
-	// Glob paths in config
-	// Fail if no paths are specified
-	parseConfig := GetConfig(d.Connection)
-	if parseConfig.INIPaths == nil {
-		return nil, errors.New("ini_paths must be configured to query INI files")
+func listFilesByType(
+	ctx context.Context,
+	d *plugin.QueryData,
+	paths []string,
+	errMsg string,
+) ([]string, error) {
+	if paths == nil {
+		return nil, errors.New(errMsg)
 	}
-
-	iniFiles, err := listPathsByFileType(ctx, d, parseConfig.INIPaths)
-	if err != nil {
-		return nil, err
-	}
-	return iniFiles, nil
-}
-
-func listYMLFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
-	// Glob paths in config
-	// Fail if no paths are specified
-	parseConfig := GetConfig(d.Connection)
-	if parseConfig.YMLPaths == nil {
-		return nil, errors.New("yml_paths must be configured to query YML files")
-	}
-
-	ymlFiles, err := listPathsByFileType(ctx, d, parseConfig.YMLPaths)
-	if err != nil {
-		return nil, err
-	}
-	return ymlFiles, nil
-}
-
-func listJSONFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
-	// Glob paths in config
-	// Fail if no paths are specified
-	parseConfig := GetConfig(d.Connection)
-	if parseConfig.JSONPaths == nil {
-		return nil, errors.New("json_paths must be configured to query JSON files")
-	}
-
-	jsonFiles, err := listPathsByFileType(ctx, d, parseConfig.JSONPaths)
-	if err != nil {
-		return nil, err
-	}
-	return jsonFiles, nil
-}
-
-func listTOMLFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
-	// Glob paths in config
-	// Fail if no paths are specified
-	parseConfig := GetConfig(d.Connection)
-	if parseConfig.TOMLPaths == nil {
-		return nil, errors.New("toml_paths must be configured to query TOML files")
-	}
-
-	tomlFiles, err := listPathsByFileType(ctx, d, parseConfig.TOMLPaths)
-	if err != nil {
-		return nil, err
-	}
-	return tomlFiles, nil
+	return listPathsByFileType(ctx, d, paths)
 }
 
 func listPathsByFileType(ctx context.Context, d *plugin.QueryData, paths []string) ([]string, error) {
@@ -109,4 +61,29 @@ func listPathsByFileType(ctx context.Context, d *plugin.QueryData, paths []strin
 		fileList = append(fileList, i)
 	}
 	return fileList, nil
+}
+
+func listINIFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
+	cfg := GetConfig(d.Connection)
+	return listFilesByType(ctx, d, cfg.INIPaths, "ini_paths must be configured to query INI files")
+}
+
+func listXMLFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
+	cfg := GetConfig(d.Connection)
+	return listFilesByType(ctx, d, cfg.XMLPaths, "xml_paths must be configured to query XML files")
+}
+
+func listYMLFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
+	cfg := GetConfig(d.Connection)
+	return listFilesByType(ctx, d, cfg.YMLPaths, "yml_paths must be configured to query YML files")
+}
+
+func listJSONFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
+	cfg := GetConfig(d.Connection)
+	return listFilesByType(ctx, d, cfg.JSONPaths, "json_paths must be configured to query JSON files")
+}
+
+func listTOMLFiles(ctx context.Context, d *plugin.QueryData) ([]string, error) {
+	cfg := GetConfig(d.Connection)
+	return listFilesByType(ctx, d, cfg.TOMLPaths, "toml_paths must be configured to query TOML files")
 }
