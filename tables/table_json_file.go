@@ -61,10 +61,12 @@ func listJSONFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 			return nil, fmt.Errorf("fail to read file %s: %v", path, err)
 		}
 
-		// defer the closing of jsonFile so that we can parse it later on
-		defer jsonFile.Close()
-
-		byteValue, _ := io.ReadAll(jsonFile)
+		byteValue, err := io.ReadAll(jsonFile)
+		jsonFile.Close()
+		if err != nil {
+			plugin.Logger(ctx).Error("json_file.listJSONFileWithPath", "read_error", err, "path", path)
+			return nil, fmt.Errorf("failed to read file content %s: %v", path, err)
+		}
 
 		// Load either JSON objects or JSON arrays
 		var result interface{}
