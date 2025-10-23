@@ -62,7 +62,9 @@ func listJSONFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		}
 
 		byteValue, err := io.ReadAll(jsonFile)
-		jsonFile.Close()
+		if cerr := jsonFile.Close(); cerr != nil {
+			plugin.Logger(ctx).Error("json_file.listJSONFileWithPath", "close_error", cerr, "path", path)
+		}
 		if err != nil {
 			plugin.Logger(ctx).Error("json_file.listJSONFileWithPath", "read_error", err, "path", path)
 			return nil, fmt.Errorf("failed to read file content %s: %v", path, err)

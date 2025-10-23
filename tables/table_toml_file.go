@@ -62,7 +62,9 @@ func listTOMLFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 		}
 
 		byteValue, err := io.ReadAll(tomlFile)
-		tomlFile.Close()
+		if cerr := tomlFile.Close(); cerr != nil {
+			plugin.Logger(ctx).Error("toml_file.listTOMLFileWithPath", "close_error", cerr, "path", path)
+		}
 		if err != nil {
 			plugin.Logger(ctx).Error("toml_file.listTOMLFileWithPath", "read_error", err, "path", path)
 			return nil, fmt.Errorf("failed to read file content %s: %v", path, err)
