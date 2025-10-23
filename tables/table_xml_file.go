@@ -54,9 +54,11 @@ func listXMLFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hyd
 			plugin.Logger(ctx).Error("xml_file.listXMLFileWithPath", "file_error", err, "path", path)
 			return nil, fmt.Errorf("fail to read file %s: %v", path, err)
 		}
-		defer xmlFile.Close()
 
 		byteValue, err := io.ReadAll(xmlFile)
+		if cerr := xmlFile.Close(); cerr != nil {
+			plugin.Logger(ctx).Error("xml_file.listXMLFileWithPath", "close_error", cerr, "path", path)
+		}
 		if err != nil {
 			plugin.Logger(ctx).Error("xml_file.listXMLFileWithPath", "read_error", err, "path", path)
 			return nil, fmt.Errorf("failed to read file content %s: %v", path, err)

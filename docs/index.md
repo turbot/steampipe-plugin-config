@@ -310,7 +310,7 @@ connection "config" {
 
 ### Supported Path Formats
 
-The `ini_paths`, `json_paths`, `toml_paths` , `xml_paths` and `yml_paths` config arguments are flexible and can search for INI, JSON, TOML, XML and YML files from several different sources respectively, e.g., local directory paths, Git, S3.
+The `ini_paths`, `json_paths`, `toml_paths`, `xml_paths` and `yml_paths` config arguments are flexible and can search for INI, JSON, TOML, XML and YML files from several different sources respectively, e.g., local directory paths, Git, S3.
 
 The following sources are supported:
 
