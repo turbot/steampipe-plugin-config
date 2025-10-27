@@ -168,6 +168,17 @@ where
   path = '/Users/myuser/invoice.xml';
 ```
 
+```sql+sqlite
+select
+  json_extract(content, '$.invoice.date') as order_date,
+  json_extract(content, '$.invoice.customer.first_name') || ' ' || json_extract(content, '$.invoice.customer.family_name') as customer_name,
+  json_array_length(json_extract(content, '$.invoice.items')) as order_count
+from
+  xml_file
+where
+  path = '/Users/myuser/invoice.xml';
+```
+
 ```sh
 +----------------------+---------------+-------------+
 | order_date           | customer_name | order_count |
@@ -192,6 +203,21 @@ select
 from
   xml_file,
   jsonb_array_elements(content -> 'invoice' -> 'items') as item
+where
+  path = '/Users/myuser/invoice.xml';
+```
+
+```sql+sqlite
+select
+  datetime(json_extract(content, '$.invoice.date')) as order_date,
+  json_extract(content, '$.invoice.customer.first_name') || ' ' || json_extract(content, '$.invoice.customer.family_name') as customer_name,
+  json_extract(item.value, '$.description') as description,
+  cast(json_extract(item.value, '$.price') as real) as price,
+  cast(json_extract(item.value, '$.quantity') as integer) as quantity,
+  cast(json_extract(item.value, '$.price') as real) * cast(json_extract(item.value, '$.quantity') as integer) as total
+from
+  xml_file,
+  json_each(json_extract(content, '$.invoice.items')) as item
 where
   path = '/Users/myuser/invoice.xml';
 ```
