@@ -17,10 +17,18 @@ For instance, if `xml_paths` is set to `[ "/Users/myuser/*.xml" ]`, and that dir
 
 This table will retrieve the file contents from each file mentioned above, which you can then query directly:
 
-```sql
+```sql+postgres
 select
   path,
   jsonb_pretty(content) as file_content
+from
+  xml_file;
+```
+
+```sql+sqlite
+select
+  path,
+  json(content, 'pretty') as file_content
 from
   xml_file;
 ```
@@ -70,10 +78,20 @@ from
 
 or, you can query configurations of a particular file using:
 
-```sql
+```sql+postgres
 select
   path,
   jsonb_pretty(content) as file_content
+from
+  xml_file
+where
+  path = '/Users/myuser/invoice.xml';
+```
+
+```sql+sqlite
+select
+  path,
+  json(content, 'pretty') as file_content
 from
   xml_file
 where
