@@ -1,3 +1,14 @@
+## v1.3.0 [2025-10-27]
+
+_What's new?_
+
+- New tables added
+  - [xml_file](https://hub.steampipe.io/plugins/turbot/config/tables/xml_file) ([#66](https://github.com/turbot/steampipe-plugin-config/pull/66)) (Thanks [@vil02](https://github.com/vil02) for the contribution!!)
+
+_Bug fixes_
+
+- Fixed file handling logic to close files correctly and improve error handling across all the tables. ([#68](https://github.com/turbot/steampipe-plugin-config/pull/68)) (Thanks [@vil02](https://github.com/vil02) for the contribution!!)
+
 ## v1.2.0 [2025-10-13]
 
 _Dependencies_
