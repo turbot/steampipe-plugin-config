@@ -13,7 +13,7 @@ engines: ["steampipe", "sqlite", "postgres", "export"]
 
 # Config + Steampipe
 
-Config plugin is used to parse various types of configuration files, e.g., `INI`, `JSON`, `TOML`, `YML`, in order to represent the content as SQL tables.
+Config plugin is used to parse various types of configuration files, e.g., `INI`, `JSON`, `TOML`, `XML`, `YML`, in order to represent the content as SQL tables.
 
 [Steampipe](https://steampipe.io) is an open source CLI to instantly query data using SQL.
 
@@ -22,6 +22,7 @@ The following file types are currently supported:
 - INI
 - JSON
 - TOML
+- XML
 - YML
 
 Query all data in your INI files:
@@ -153,6 +154,58 @@ from
 +----------------------------+------------------------------------------------------------+
 ```
 
+Query all data in your XML files:
+```sql
+select
+  path,
+  jsonb_pretty(content) as file_content
+from
+  xml_file;
+```
+
+```sh
++---------------------------+----------------------------------------------------------------+
+| path                      | file_content                                                   |
++---------------------------+----------------------------------------------------------------+
+| /Users/myuser/test.xml    | {                                                              |
+|                           |     "root": {                                                  |
+|                           |         "foo": "bar",                                          |
+|                           |         "includes": "common.xml"                               |
+|                           |     }                                                          |
+|                           | }                                                              |
+| /Users/myuser/invoice.xml | {                                                              |
+|                           |     "invoice": {                                               |
+|                           |         "city": "East Centerville",                            |
+|                           |         "date": "2012-08-06T00:00:00Z",                        |
+|                           |         "items": [                                             |
+|                           |             {                                                  |
+|                           |                 "price": "1.47",                               |
+|                           |                 "part_no": "A4786",                            |
+|                           |                 "quantity": "4",                               |
+|                           |                 "description": "Water Bucket (Filled)"         |
+|                           |             },                                                 |
+|                           |             {                                                  |
+|                           |                 "size": "8",                                   |
+|                           |                 "price": "133.7",                              |
+|                           |                 "part_no": "E1628",                            |
+|                           |                 "quantity": "1",                               |
+|                           |                 "description": "High Heeled \"Ruby\" Slippers" |
+|                           |             }                                                  |
+|                           |         ],                                                     |
+|                           |         "state": "KS",                                         |
+|                           |         "street": "123 Tornado Alley\nSuite 16",               |
+|                           |         "bill-to": "",                                         |
+|                           |         "receipt": "Oz-Ware Purchase Invoice",                 |
+|                           |         "ship-to": "",                                         |
+|                           |         "customer": {                                          |
+|                           |             "first_name": "Dorothy",                           |
+|                           |             "family_name": "Gale"                              |
+|                           |         }                                                      |
+|                           |     }                                                          |
+|                           | }                                                              |
++---------------------------+----------------------------------------------------------------+
+```
+
 Query all data in your YML files:
 
 ```sql
@@ -250,13 +303,14 @@ connection "config" {
   ini_paths  = [ "*.ini" ]
   json_paths = [ "*.json" ]
   toml_paths = [ "*.toml" ]
+  xml_paths  = [ "*.xml" ]
   yml_paths  = [ "*.yml", "*.yaml" ]
 }
 ```
 
 ### Supported Path Formats
 
-The `ini_paths`, `json_paths`, `toml_paths` and `yml_paths` config arguments are flexible and can search for INI, JSON, TOML and YML files from several different sources respectively, e.g., local directory paths, Git, S3.
+The `ini_paths`, `json_paths`, `toml_paths`, `xml_paths` and `yml_paths` config arguments are flexible and can search for INI, JSON, TOML, XML and YML files from several different sources respectively, e.g., local directory paths, Git, S3.
 
 The following sources are supported:
 
@@ -300,11 +354,11 @@ connection "config" {
 }
 ```
 
-**Note**: If any path matches on `*` without the expected file extension (e.g. `.ini`, `.json`, `.toml`, `.yaml`, `.yml`), all files (including non-required files) in the directory will be matched, which may cause errors if incompatible file types exist.
+**Note**: If any path matches on `*` without the expected file extension (e.g. `.ini`, `.json`, `.toml`, `.xml`, `.yaml`, `.yml`), all files (including non-required files) in the directory will be matched, which may cause errors if incompatible file types exist.
 
 #### Configuring Local File Paths
 
-You can define a list of local directory paths to search for INI, JSON, TOML and YML files. Paths are resolved relative to the current working directory.
+You can define a list of local directory paths to search for INI, JSON, TOML, XML and YML files. Paths are resolved relative to the current working directory.
 
 For example, for the `json_paths` argument:
 
@@ -324,6 +378,7 @@ connection "config" {
   ini_paths  = [ "*.ini", "~/*.ini", "/path/to/dir/main.ini" ]
   json_paths = [ "*.json", "~/*.json", "/path/to/dir/main.json" ]
   toml_paths = [ "*.toml", "~/*.toml", "/path/to/dir/main.toml" ]
+  xml_paths  = [ "*.xml", "~/*.xml", "/path/to/dir/main.xml" ]
   yml_paths  = [ "*.yml", "~/*.yaml", "/path/to/dir/main.yml" ]
 }
 ```
@@ -332,7 +387,7 @@ connection "config" {
 
 #### Configuring Remote Git Repository URLs
 
-You can also configure `ini_paths`, `json_paths`, `toml_paths` and `yml_paths` with any Git remote repository URLs, e.g., GitHub, BitBucket, GitLab. The plugin will then attempt to retrieve any INI, JSON and YML files from the remote repositories.
+You can also configure `ini_paths`, `json_paths`, `toml_paths`, `xml_paths`, and `yml_paths` with any Git remote repository URLs, e.g., GitHub, BitBucket, GitLab. The plugin will then attempt to retrieve any INI, JSON and YML files from the remote repositories.
 
 For example:
 
