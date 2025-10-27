@@ -61,10 +61,14 @@ func listTOMLFileWithPath(ctx context.Context, d *plugin.QueryData, h *plugin.Hy
 			return nil, fmt.Errorf("fail to read file %s: %v", path, err)
 		}
 
-		// defer the closing of tomlFile so that we can parse it later on
-		defer tomlFile.Close()
-
-		byteValue, _ := io.ReadAll(tomlFile)
+		byteValue, err := io.ReadAll(tomlFile)
+		if cerr := tomlFile.Close(); cerr != nil {
+			plugin.Logger(ctx).Error("toml_file.listTOMLFileWithPath", "close_error", cerr, "path", path)
+		}
+		if err != nil {
+			plugin.Logger(ctx).Error("toml_file.listTOMLFileWithPath", "read_error", err, "path", path)
+			return nil, fmt.Errorf("failed to read file content %s: %v", path, err)
+		}
 
 		// Load TOML data
 		var result interface{}
