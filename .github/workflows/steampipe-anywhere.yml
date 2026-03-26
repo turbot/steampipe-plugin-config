@@ -9,5 +9,5 @@ permissions:
 
 jobs:
   anywhere_publish_workflow:
-    uses: turbot/steampipe-workflows/.github/workflows/steampipe-anywhere.yml@hack
+    uses: turbot/steampipe-workflows/.github/workflows/steampipe-anywhere.yml@d2f545467ce97c07a5f0e07df3cd58f044fbc72e # hack
     secrets: inherit
