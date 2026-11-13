@@ -5,7 +5,7 @@ import (
 	"errors"
 	"os"
 
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 )
 
 func listFilesByType(

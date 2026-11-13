@@ -9,8 +9,8 @@ import (
 
 	"gopkg.in/ini.v1"
 
-	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 )
 
 func tableINIKeyValue(ctx context.Context) *plugin.Table {
@@ -106,10 +106,10 @@ func parseValue(cfg *ini.File, str string) string {
 				sec := strings.Join(splitStr[:len(splitStr)-1], ".")
 				key := splitStr[len(splitStr)-1]
 				value := cfg.Section(sec).Key(key).String()
-				str = strings.Replace(str, matchedStr[0], value, -1)
+				str = strings.ReplaceAll(str, matchedStr[0], value)
 			} else {
 				// Replace the matched string with env variable value
-				str = strings.Replace(str, matchedStr[0], os.Getenv(matchedStr[1]), -1)
+				str = strings.ReplaceAll(str, matchedStr[0], os.Getenv(matchedStr[1]))
 			}
 		}
 	}
